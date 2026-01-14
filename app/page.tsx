@@ -9,8 +9,8 @@ export default function Home() {
   const [result, setResult] = useState<string | null>(null);
 
   return (
-    <main style={{ padding: "24px", maxWidth: "600px" }}>
-      <h1>Automation Control Panel</h1>
+    <main className="max-h-screen mx-auto p-6">
+      <h1 className="text-2xl pb-6">Automation Control Panel</h1>
 
       <form
         onSubmit={(e) => {
@@ -25,41 +25,46 @@ export default function Home() {
         }}
       >
         <div>
-          <label>Name</label>
-          <br />
+          <h2>Name</h2>
           <input
             required
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            className="bg-amber-100 text-black mt-1"
           />
         </div>
 
-        <div style={{ marginTop: "12px" }}>
-          <label>Email</label>
-          <br />
+        <div className="mt-4">
+          <h2>Email</h2>
           <input
             required
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="bg-amber-100 text-neutral-800 mt-1"
           />
         </div>
 
-        <button type="submit" disabled={loading} style={{ marginTop: "16px" }}>
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
+        >
           {loading ? "Running..." : "Run automation"}
         </button>
       </form>
 
-      <div style={{ marginTop: "24px" }}>
+      <div className="mt-6">
         <strong>Result</strong>
-        <div style={{ marginTop: "8px" }}>
+        <div className="mt-2 p-4 max-w-max">
           {loading && <p>Processing...</p>}
-          {!loading && result && <p>{result}</p>}
-          {!loading && !result && <p>No result yet.</p>}
+          {!loading && result && (
+            <p className="rounded-lg p-4 border">{result}</p>
+          )}
+          {!loading && !result && <p className="opacity-5">No result yet.</p>}
         </div>
       </div>
-
     </main>
   );
 }
