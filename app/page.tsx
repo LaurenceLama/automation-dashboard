@@ -7,6 +7,25 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function runAutomation() {
+    setLoading(true);
+    setResult(null);
+    setError(null);
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    const shouldFail = Math.random() < 0.3; 
+
+    if (shouldFail) {
+      setError("Automation failed. Please try again.");
+    } else {
+      setResult(`Automation completed for ${name || "unknown user"}`);
+    }
+
+    setLoading(false);
+  }
 
   return (
     <main className="max-h-screen mx-auto p-6">
@@ -15,13 +34,7 @@ export default function Home() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          setLoading(true);
-          setResult(null);
-
-          setTimeout(() => {
-            setResult(`Automation completed for ${name || "unknown user"}`);
-            setLoading(false);
-          }, 1500);
+          runAutomation();
         }}
       >
         <div>
@@ -61,6 +74,11 @@ export default function Home() {
           {loading && <p>Processing...</p>}
           {!loading && result && (
             <p className="rounded-lg p-4 border">{result}</p>
+          )}
+          {!loading && error && (
+            <p className="rounded-lg p-4 border border-red-400 text-red-600">
+              {error}
+            </p>
           )}
           {!loading && !result && <p className="opacity-5">No result yet.</p>}
         </div>
