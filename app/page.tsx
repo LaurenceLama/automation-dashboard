@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 
+interface History {
+  // id: string,
+  name: string;
+  email: string;
+  // status: boolean,
+  // timestamp: number;
+}
+
 export default function Home() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [history, setHistory] = useState<History[]>([]);
 
   async function runAutomation() {
     setLoading(true);
@@ -16,12 +25,13 @@ export default function Home() {
 
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const shouldFail = Math.random() < 0.3; 
+    const shouldFail = Math.random() < 0.3;
 
     if (shouldFail) {
       setError("Automation failed. Please try again.");
     } else {
       setResult(`Automation completed for ${name || "unknown user"}`);
+      setHistory((prev) => [...prev, { name, email }]);
     }
 
     setLoading(false);
@@ -81,6 +91,24 @@ export default function Home() {
             </p>
           )}
           {!loading && !result && <p className="opacity-5">No result yet.</p>}
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <strong>History</strong>
+        <div className="mt-2 space-y-2">
+          {history.length === 0 && <p className="opacity-40">No runs yet.</p>}
+
+          {history.map((item, index) => (
+            <div key={index} className="border rounded-lg p-3 text-sm">
+              <p>
+                <h2>Name: {item.name}</h2>
+              </p>
+              <p>
+                <h2>Email: {item.email}</h2>
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </main>
