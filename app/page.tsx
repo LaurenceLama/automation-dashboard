@@ -3,11 +3,10 @@
 import { useState } from "react";
 
 interface History {
-  // id: string,
   name: string;
   email: string;
-  // status: boolean,
-  // timestamp: number;
+  timestamp: string;
+  status: "goods" | "nonGoods";
 }
 
 export default function Home() {
@@ -26,12 +25,20 @@ export default function Home() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     const shouldFail = Math.random() < 0.3;
+    const timestamp = new Date().toLocaleString();
 
     if (shouldFail) {
       setError("Automation failed. Please try again.");
+      setHistory((prev) => [
+        ...prev,
+        { name, email, timestamp, status: "nonGoods" },
+      ]);
     } else {
       setResult(`Automation completed for ${name || "unknown user"}`);
-      setHistory((prev) => [...prev, { name, email }]);
+      setHistory((prev) => [
+        ...prev,
+        { name, email, timestamp, status: "goods" },
+      ]);
     }
 
     setLoading(false);
@@ -100,13 +107,14 @@ export default function Home() {
           {history.length === 0 && <p className="opacity-40">No runs yet.</p>}
 
           {history.map((item, index) => (
-            <div key={index} className="border rounded-lg p-3 text-sm">
-              <p>
-                <h2>Name: {item.name}</h2>
-              </p>
-              <p>
-                <h2>Email: {item.email}</h2>
-              </p>
+            <div
+              key={index}
+              className={`border rounded-lg p-3 mb-6 max-w-max text-sm ${ item.status === "nonGoods" ? "border-red-400" : "border-green-300"}`}
+            >
+              <h2>Name: {item.name}</h2>
+              <h2>Email: {item.email}</h2>
+              <h2>Created since: {item.timestamp}</h2>
+              <h2>Creation status: {item.status}</h2>
             </div>
           ))}
         </div>
