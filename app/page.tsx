@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface History {
   name: string;
   email: string;
   timestamp: string;
-  status: "goods" | "nonGoods";
+  status: "success" | "error";
 }
 
 export default function Home() {
@@ -16,6 +16,21 @@ export default function Home() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<History[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true); // No error on page and stored items mount fine, but vscode says 'Error: Calling setState synchronously within an effect can trigger cascading renders'
+
+    const stored = localStorage.getItem("automation-history");
+    if (stored) {
+      setHistory(JSON.parse(stored));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem("automation-history", JSON.stringify(history));
+  }, [history, mounted]);
 
   async function runAutomation() {
     setLoading(true);
@@ -31,18 +46,20 @@ export default function Home() {
       setError("Automation failed. Please try again.");
       setHistory((prev) => [
         ...prev,
-        { name, email, timestamp, status: "nonGoods" },
+        { name, email, timestamp, status: "error" },
       ]);
     } else {
       setResult(`Automation completed for ${name || "unknown user"}`);
       setHistory((prev) => [
         ...prev,
-        { name, email, timestamp, status: "goods" },
+        { name, email, timestamp, status: "success" },
       ]);
     }
 
     setLoading(false);
   }
+
+  if (!mounted) return null;
 
   return (
     <main className="max-h-screen mx-auto p-6">
@@ -109,7 +126,7 @@ export default function Home() {
           {history.map((item, index) => (
             <div
               key={index}
-              className={`border rounded-lg p-3 mb-6 max-w-max text-sm ${ item.status === "nonGoods" ? "border-red-400" : "border-green-300"}`}
+              className={`border rounded-lg p-3 mb-6 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-300"}`}
             >
               <h2>Name: {item.name}</h2>
               <h2>Email: {item.email}</h2>
