@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import HistoryPanel from "./components/HistoryPanel";
+import { History } from "./atoms/History";
 
-interface History {
-  name: string;
-  email: string;
-  timestamp: string;
-  status: "success" | "error";
-}
+
+const STORAGE_KEY = "automation-history";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -16,21 +14,24 @@ export default function Home() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<History[]>([]);
-  const [mounted, setMounted] = useState(false);
 
+  // LOAD once on mount
+  // NOTE: React Compiler may warn about setState in effect.
+  // This effect runs once and is safe by design.
   useEffect(() => {
-    setMounted(true); // No error on page and stored items mount fine, but vscode says 'Error: Calling setState synchronously within an effect can trigger cascading renders'
-
-    const stored = localStorage.getItem("automation-history");
-    if (stored) {
-      setHistory(JSON.parse(stored));
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        setHistory(JSON.parse(stored));
+      }
+    } catch {
+      console.warn("Failed to load history");
     }
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
-    localStorage.setItem("automation-history", JSON.stringify(history));
-  }, [history, mounted]);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  }, [history]);
 
   async function runAutomation() {
     setLoading(true);
@@ -58,8 +59,6 @@ export default function Home() {
 
     setLoading(false);
   }
-
-  if (!mounted) return null;
 
   return (
     <main className="max-h-screen mx-auto p-6">
@@ -118,24 +117,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mt-6">
-        <strong>History</strong>
-        <div className="mt-2 space-y-2">
-          {history.length === 0 && <p className="opacity-40">No runs yet.</p>}
-
-          {history.map((item, index) => (
-            <div
-              key={index}
-              className={`border rounded-lg p-3 mb-6 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-300"}`}
-            >
-              <h2>Name: {item.name}</h2>
-              <h2>Email: {item.email}</h2>
-              <h2>Created since: {item.timestamp}</h2>
-              <h2>Creation status: {item.status}</h2>
-            </div>
-          ))}
-        </div>
-      </div>
+      <HistoryPanel history={history} />
     </main>
   );
 }
