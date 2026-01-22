@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import HistoryPanel from "./components/HistoryPanel";
 import { History } from "./atoms/History";
-
-
-const STORAGE_KEY = "automation-history";
+import { useLocalStorage } from "./hooks/useLocalStorage";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -13,25 +11,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [history, setHistory] = useState<History[]>([]);
-
-  // LOAD once on mount
-  // NOTE: React Compiler may warn about setState in effect.
-  // This effect runs once and is safe by design.
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setHistory(JSON.parse(stored));
-      }
-    } catch {
-      console.warn("Failed to load history");
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  }, [history]);
+  const [history, setHistory] = useLocalStorage<History[]>("automation-history", []);
 
   async function runAutomation() {
     setLoading(true);
