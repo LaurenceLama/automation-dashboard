@@ -5,7 +5,7 @@ import { History } from "../atoms/History";
 export default function HistoryPanel({ history }: { history: History[] }) {
   return (
     <div className="mt-6">
-      <strong>History</strong>
+      <strong>Execution log</strong>
 
       <div className="mt-2 space-y-2">
         {history.length === 0 && <p className="opacity-40">No runs yet.</p>}
@@ -15,10 +15,10 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             key={index}
             className={`border rounded-lg p-3 mb-6 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-300"}`}
           >
+            <h2>Workflow status: {item.status}</h2>
+            <h2>Created since: {item.timestamp}</h2>
             <h2>Name: {item.name}</h2>
             <h2>Email: {item.email}</h2>
-            <h2>Created since: {item.timestamp}</h2>
-            <h2>Status: {item.status}</h2>
           </div>
         ))}
       </div>

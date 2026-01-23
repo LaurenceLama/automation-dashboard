@@ -11,7 +11,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [history, setHistory] = useLocalStorage<History[]>("automation-history", []);
+  const [history, setHistory] = useLocalStorage<History[]>("automation-history",[],);
+  const [showSuccessOnly, setShowSuccessOnly] = useState(false);
 
   async function runAutomation() {
     setLoading(true);
@@ -40,9 +41,11 @@ export default function Home() {
     setLoading(false);
   }
 
+  const visibleHistory = showSuccessOnly ? history.filter((item) => item.status === "success") : history;
+
   return (
     <main className="max-h-screen mx-auto p-6">
-      <h1 className="text-2xl pb-6">Automation Control Panel</h1>
+      <h1 className="text-2xl pb-6">Automation Dashboard</h1>
 
       <form
         onSubmit={(e) => {
@@ -77,7 +80,7 @@ export default function Home() {
           disabled={loading}
           className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
         >
-          {loading ? "Running..." : "Run automation"}
+          {loading ? "Running..." : "Run workflow"}
         </button>
       </form>
 
@@ -97,7 +100,14 @@ export default function Home() {
         </div>
       </div>
 
-      <HistoryPanel history={history} />
+      <button
+        onClick={() => setShowSuccessOnly((prev) => !prev)}
+        className="mb-4 px-3 py-1 rounded border text-sm"
+      >
+        {showSuccessOnly ? "Show all" : "Show success only"}
+      </button>
+
+      <HistoryPanel history={visibleHistory} />
     </main>
   );
 }
