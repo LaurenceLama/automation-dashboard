@@ -11,8 +11,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [history, setHistory] = useLocalStorage<History[]>("automation-history",[],);
-  const [showSuccessOnly, setShowSuccessOnly] = useState(false);
+  const [workflowName, setWorkflowName] = useState("");
+  const [history, setHistory] = useLocalStorage<History[]>(
+    "automation-history",
+    [],
+  );
 
   async function runAutomation() {
     setLoading(true);
@@ -28,24 +31,22 @@ export default function Home() {
       setError("Automation failed. Please try again.");
       setHistory((prev) => [
         ...prev,
-        { name, email, timestamp, status: "error" },
+        { name, email, timestamp, workflowName, status: "error" },
       ]);
     } else {
       setResult(`Automation completed for ${name || "unknown user"}`);
       setHistory((prev) => [
         ...prev,
-        { name, email, timestamp, status: "success" },
+        { name, email, timestamp, workflowName, status: "success" },
       ]);
     }
 
     setLoading(false);
   }
 
-  const visibleHistory = showSuccessOnly ? history.filter((item) => item.status === "success") : history;
-
   return (
     <main className="max-h-screen mx-auto p-6">
-      <h1 className="text-2xl pb-6">Automation Dashboard</h1>
+      <h1 className="text-2xl pb-4">Automation Dashboard</h1>
 
       <form
         onSubmit={(e) => {
@@ -53,7 +54,7 @@ export default function Home() {
           runAutomation();
         }}
       >
-        <div>
+        <div className="mt-4">
           <h2>Name</h2>
           <input
             required
@@ -71,7 +72,19 @@ export default function Home() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-amber-100 text-neutral-800 mt-1"
+            className="bg-amber-100 text-neutral-200 mt-1"
+          />
+        </div>
+
+        <div className="mt-4">
+          <h2>Workflow name</h2>
+          <input
+            required
+            type="text"
+            value={workflowName}
+            onChange={(e) => setWorkflowName(e.target.value)}
+            className="bg-amber-100 text-black mt-1"
+            placeholder="e.g. Lead intake → CRM"
           />
         </div>
 
@@ -100,14 +113,7 @@ export default function Home() {
         </div>
       </div>
 
-      <button
-        onClick={() => setShowSuccessOnly((prev) => !prev)}
-        className="mb-4 px-3 py-1 rounded border text-sm"
-      >
-        {showSuccessOnly ? "Show all" : "Show success only"}
-      </button>
-
-      <HistoryPanel history={visibleHistory} />
+      <HistoryPanel history={history} />
     </main>
   );
 }
