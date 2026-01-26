@@ -13,11 +13,19 @@ export default function HistoryPanel({ history }: { history: History[] }) {
     return item.status === filter;
   });
 
+  const totalRuns = history.length;
+  const successRuns = history.filter(
+    (item) => item.status === "success",
+  ).length;
+  const errorRuns = history.filter((item) => item.status === "error").length;
+
   return (
     <div className="mt-6">
-      <strong>Execution log</strong>
+      <strong>Execution history</strong>
 
-      <p className="text-sm mt-2 opacity-60">Total executions: {history.length}</p>
+      <p className="text-sm mt-2 opacity-80">
+        Total runs: {totalRuns} • Success: {successRuns} • Errors: {errorRuns}
+      </p>
 
       <div className="my-4 flex gap-2">
         <button
@@ -35,8 +43,9 @@ export default function HistoryPanel({ history }: { history: History[] }) {
           className={
             filter === "success"
               ? "font-bold border p-2 max-w-max underline border-green-400 cursor-pointer"
-              : "border-red-400 cursor-pointer"
+              : "border-red-400 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           }
+          disabled={history.length === 0}
         >
           Success
         </button>
@@ -45,8 +54,9 @@ export default function HistoryPanel({ history }: { history: History[] }) {
           className={
             filter === "error"
               ? "font-bold border p-2 max-w-max underline border-red-400 cursor-pointer"
-              : "border-red-400 cursor-pointer"
+              : "border-red-400 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           }
+          disabled={history.length === 0}
         >
           Error
         </button>
@@ -54,8 +64,8 @@ export default function HistoryPanel({ history }: { history: History[] }) {
 
       <div className="mt-2 space-y-2">
         {filteredHistory.length === 0 && (
-          <p className="opacity-70">
-            Run a workflow and track the results here.
+          <p className="opacity-70 text-md font-semibold">
+            Executions and statuses will appear here once a workflow runs.
           </p>
         )}
 
@@ -71,11 +81,13 @@ export default function HistoryPanel({ history }: { history: History[] }) {
                   : "bg-red-200 text-red-900"
               }`}
             >
-              Workflow status: {item.status.toUpperCase()}
+              Execution status: {item.status.toUpperCase()}
             </h2>
-            <h2>Workflow name: {item.workflowName}</h2>
+            <h2>
+              Workflow name: <b>{item.workflowName}</b>
+            </h2>
 
-            <h2>Created since: {item.timestamp}</h2>
+            <h2>Created at: {item.timestamp}</h2>
             <h2>Name: {item.name}</h2>
             <h2>Email: {item.email}</h2>
           </div>

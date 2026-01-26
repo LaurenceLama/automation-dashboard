@@ -72,7 +72,7 @@ export default function Home() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-amber-100 text-neutral-200 mt-1"
+            className="bg-amber-100 text-black mt-1"
           />
         </div>
 
@@ -113,6 +113,12 @@ export default function Home() {
         </div>
       </div>
 
+      <button
+        onClick={() => setHistory([])}
+        className="p-1 text-xs underline opacity-60 hover:opacity-100 border cursor-pointer"
+      >
+        Clear history (dev)
+      </button>
       <HistoryPanel history={history} />
     </main>
   );
