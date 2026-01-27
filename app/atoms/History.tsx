@@ -1,7 +1,10 @@
+export type TriggerType = "manual" | "webhook" | "completion";
+
 export interface History {
-  workflowName: string;
   name: string;
   email: string;
   timestamp: string;
-  status: "success" | "error";
+  workflowName: string;
+  status: "pending" | "success" | "error";
+  trigger: TriggerType;
 }

@@ -86,10 +86,10 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             <h2>
               Workflow name: <b>{item.workflowName}</b>
             </h2>
-
             <h2>Created at: {item.timestamp}</h2>
             <h2>Name: {item.name}</h2>
             <h2>Email: {item.email}</h2>
+            <h2>Triggered via: {item.trigger}</h2>
           </div>
         ))}
       </div>

@@ -17,6 +17,7 @@ export default function Home() {
     [],
   );
 
+  // This will later trigger a Make webhook
   async function runAutomation() {
     setLoading(true);
     setResult(null);
@@ -27,17 +28,34 @@ export default function Home() {
     const shouldFail = Math.random() < 0.3;
     const timestamp = new Date().toLocaleString();
 
+    const executionPayload = {
+      name,
+      email,
+      workflowName,
+      timestamp,
+    };
+
+    // TODO: convert pending execution to success/error once Make responds
+
     if (shouldFail) {
       setError("Automation failed. Please try again.");
       setHistory((prev) => [
         ...prev,
-        { name, email, timestamp, workflowName, status: "error" },
+        {
+          ...executionPayload,
+          status: "error",
+          trigger: "manual",
+        },
       ]);
     } else {
       setResult(`Automation completed for ${name || "unknown user"}`);
       setHistory((prev) => [
         ...prev,
-        { name, email, timestamp, workflowName, status: "success" },
+        {
+          ...executionPayload,
+          status: "success",
+          trigger: "manual",
+        },
       ]);
     }
 
@@ -47,6 +65,12 @@ export default function Home() {
   return (
     <main className="max-h-screen mx-auto p-6">
       <h1 className="text-2xl pb-4">Automation Dashboard</h1>
+
+      <p className="text-sm opacity-80 max-w-xl">
+        Run workflows, track execution status, and monitor automation results in
+        one place. Designed for teams using tools like Make, Zapier, or
+        GoHighLevel.
+      </p>
 
       <form
         onSubmit={(e) => {
@@ -112,6 +136,8 @@ export default function Home() {
           {!loading && !result && <p className="opacity-5">No result yet.</p>}
         </div>
       </div>
+
+      <hr className="my-6 opacity-30" />
 
       <button
         onClick={() => setHistory([])}
