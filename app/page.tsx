@@ -63,89 +63,100 @@ export default function Home() {
   }
 
   return (
-    <main className="max-h-screen mx-auto p-6">
-      <h1 className="text-2xl pb-4">Automation Dashboard</h1>
-
-      <p className="text-sm opacity-80 max-w-xl">
-        Run workflows, track execution status, and monitor automation results in
-        one place. Designed for teams using tools like Make, Zapier, or
-        GoHighLevel.
-      </p>
-
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          runAutomation();
-        }}
-      >
-        <div className="mt-4">
-          <h2>Name</h2>
-          <input
-            required
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="bg-amber-100 text-black mt-1"
-          />
-        </div>
-
-        <div className="mt-4">
-          <h2>Email</h2>
-          <input
-            required
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="bg-amber-100 text-black mt-1"
-          />
-        </div>
-
-        <div className="mt-4">
-          <h2>Workflow name</h2>
-          <input
-            required
-            type="text"
-            value={workflowName}
-            onChange={(e) => setWorkflowName(e.target.value)}
-            className="bg-amber-100 text-black mt-1"
-            placeholder="e.g. Lead intake → CRM"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
-        >
-          {loading ? "Running..." : "Run workflow"}
-        </button>
-      </form>
-
-      <div className="mt-6">
-        <strong>Result</strong>
-        <div className="mt-2 p-4 max-w-max">
-          {loading && <p>Processing...</p>}
-          {!loading && result && (
-            <p className="rounded-lg p-4 border">{result}</p>
-          )}
-          {!loading && error && (
-            <p className="rounded-lg p-4 border border-red-400 text-red-600">
-              {error}
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-5xl flex p-6">
+        <div className="w-1/2">
+          <div className="mb-10">
+            <h1 className="text-2xl pb-4">Automation Dashboard</h1>
+      
+            <p className="text-sm opacity-80 max-w-xl">
+              Run workflows, track execution status, and monitor automation results in
+              one place. Designed for teams using tools like Make, Zapier, or
+              GoHighLevel.
             </p>
-          )}
-          {!loading && !result && <p className="opacity-5">No result yet.</p>}
+          </div>
+    
+          <div className="border rounded-xl max-w-max p-6 mb-10">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                runAutomation();
+              }}
+            >
+              <div>
+                <h2>Name</h2>
+                <input
+                  required
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-amber-100 text-black mt-1"
+                />
+              </div>
+      
+              <div className="mt-4">
+                <h2>Email</h2>
+                <input
+                  required
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-amber-100 text-black mt-1"
+                />
+              </div>
+      
+              <div className="mt-4">
+                <h2>Workflow name</h2>
+                <input
+                  required
+                  type="text"
+                  value={workflowName}
+                  onChange={(e) => setWorkflowName(e.target.value)}
+                  className="bg-amber-100 text-black mt-1"
+                  placeholder="e.g. Lead intake → CRM"
+                />
+              </div>
+      
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
+              >
+                {loading ? "Running..." : "Run workflow"}
+              </button>
+            </form>
+          </div>
+    
+          <div className="mt-4">
+            <strong>Result</strong>
+            <div className="mt-2 p-4 max-w-max">
+              {loading && <p>Processing...</p>}
+              {!loading && result && (
+                <p className="rounded-lg p-4 border">{result}</p>
+              )}
+              {!loading && error && (
+                <p className="rounded-lg p-4 border border-red-400 text-red-600">
+                  {error}
+                </p>
+              )}
+              {!loading && !result && <p className="opacity-50">No result yet.</p>}
+            </div>
+          </div>
         </div>
+  
+        <hr className="mx-4 opacity-30" />
+  
+        <div className="w-1/2">
+          <HistoryPanel history={history} />
+          <button
+            onClick={() => setHistory([])}
+            className="p-1 mb-2 text-xs underline opacity-60 hover:opacity-100 border cursor-pointer"
+          >
+            Clear history (dev)
+          </button>
+        </div>
+
       </div>
-
-      <hr className="my-6 opacity-30" />
-
-      <button
-        onClick={() => setHistory([])}
-        className="p-1 text-xs underline opacity-60 hover:opacity-100 border cursor-pointer"
-      >
-        Clear history (dev)
-      </button>
-      <HistoryPanel history={history} />
     </main>
   );
 }

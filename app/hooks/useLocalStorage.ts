@@ -29,9 +29,14 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
 
   // This will call a Make webhook to start the workflow
   // The execution history will update ONLY after Make responds
+  // NOTE: Workflow execution updates should occur
+  // after an external system responds (e.g. webhook callback)
+
   // function triggerWorkflowRun() {
   //   // TODO: Call Make webhook here
   // }
+
+  // NEXT: support webhook-triggered executions
 
   return [value, setValue] as const;
 }

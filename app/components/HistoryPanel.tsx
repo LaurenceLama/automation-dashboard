@@ -20,7 +20,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
   const errorRuns = history.filter((item) => item.status === "error").length;
 
   return (
-    <div className="mt-6">
+    <div className="">
       <strong>Execution history</strong>
 
       <p className="text-sm mt-2 opacity-80">

@@ -1,3 +1,24 @@
+## Vision
+
+This repo aims for a lightweight execution dashboard that lets teams see how automations run across tools like Make, Zapier, and GoHighLevel — without jumping between platforms.
+
+Automation platforms already provide execution logs, but they are:
+- Tool-specific
+- Not client-facing
+- Fragmented across systems
+
+This dashboard acts as a unified, client-safe execution layer
+that standardizes how runs are viewed regardless of trigger source.
+
+## Next steps (planned)
+- Replace mock execution with Make webhook trigger
+- Support webhook callbacks for success/error updates
+- Add execution states (pending → success/error)
+- Optional: role-based or client-safe views
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
