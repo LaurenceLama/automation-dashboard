@@ -21,7 +21,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
 
   return (
     <div className="">
-      <strong>Execution history</strong>
+      <h1 className="text-2xl">Execution history</h1>
 
       <p className="text-sm mt-2 opacity-80">
         Total runs: {totalRuns} • Success: {successRuns} • Errors: {errorRuns}
@@ -64,7 +64,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
 
       <div className="mt-2 space-y-2">
         {filteredHistory.length === 0 && (
-          <p className="opacity-70 text-md font-semibold">
+          <p className="mb-4 opacity-70 text-md font-medium">
             Executions and statuses will appear here once a workflow runs.
           </p>
         )}

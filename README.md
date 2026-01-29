@@ -10,6 +10,9 @@ Automation platforms already provide execution logs, but they are:
 This dashboard acts as a unified, client-safe execution layer
 that standardizes how runs are viewed regardless of trigger source.
 
+This dashboard gives clients visibility into automation runs without exposing the automation platform itself.
+
+
 ## Next steps (planned)
 - Replace mock execution with Make webhook trigger
 - Support webhook callbacks for success/error updates

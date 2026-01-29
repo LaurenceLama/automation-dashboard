@@ -62,10 +62,10 @@ export default function Home() {
     setLoading(false);
   }
 
-  return (
-    <main className="min-h-screen">
-      <div className="mx-auto max-w-5xl flex p-6">
-        <div className="w-1/2">
+  return (    
+    <main className="min-h-screen flex items-center">
+      <div className="mx-auto max-w-5xl xl:flex p-10 xl:p-6">
+        <div className="xl:w-1/2">
           <div className="mb-10">
             <h1 className="text-2xl pb-4">Automation Dashboard</h1>
       
@@ -76,43 +76,43 @@ export default function Home() {
             </p>
           </div>
     
-          <div className="border rounded-xl max-w-max p-6 mb-10">
+          <div className="border rounded-xl min-w-fit p-6 mb-10">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 runAutomation();
               }}
             >
-              <div>
+              <div className="">
                 <h2>Name</h2>
                 <input
                   required
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="bg-amber-100 text-black mt-1"
+                  className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
                 />
               </div>
       
-              <div className="mt-4">
+              <div className=" mt-4">
                 <h2>Email</h2>
                 <input
                   required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-amber-100 text-black mt-1"
+                  className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
                 />
               </div>
       
-              <div className="mt-4">
+              <div className=" mt-4">
                 <h2>Workflow name</h2>
                 <input
                   required
                   type="text"
                   value={workflowName}
                   onChange={(e) => setWorkflowName(e.target.value)}
-                  className="bg-amber-100 text-black mt-1"
+                  className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
                   placeholder="e.g. Lead intake → CRM"
                 />
               </div>
@@ -139,14 +139,14 @@ export default function Home() {
                   {error}
                 </p>
               )}
-              {!loading && !result && <p className="opacity-50">No result yet.</p>}
+              {!loading && !result && !error && <p className="opacity-50">No result yet.</p>}
             </div>
           </div>
         </div>
   
-        <hr className="mx-4 opacity-30" />
+        <hr className="xl:mr-20 my-6" />
   
-        <div className="w-1/2">
+        <div className="xl:w-1/2">
           <HistoryPanel history={history} />
           <button
             onClick={() => setHistory([])}
