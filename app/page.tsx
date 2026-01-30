@@ -23,59 +23,62 @@ export default function Home() {
     setResult(null);
     setError(null);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    const shouldFail = Math.random() < 0.3;
+    const executionId = crypto.randomUUID();
     const timestamp = new Date().toLocaleString();
 
-    const executionPayload = {
+    const baseExecution: History = {
+      executionId,
       name,
       email,
       workflowName,
       timestamp,
+      status: "pending",
+      trigger: "manual",
     };
 
-    // TODO: convert pending execution to success/error once Make responds
+    setHistory((prev) => [...prev, baseExecution]);
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    const shouldFail = Math.random() < 0.3;
+
+    setHistory((prev) =>
+      prev.map((item) =>
+        item.executionId === executionId
+          ? {
+              ...item,
+              status: shouldFail ? "error" : "success",
+              ...(shouldFail && {
+                errorMessage: "Automation failed. Please try again.",
+              }),
+            }
+          : item,
+      ),
+    );
 
     if (shouldFail) {
       setError("Automation failed. Please try again.");
-      setHistory((prev) => [
-        ...prev,
-        {
-          ...executionPayload,
-          status: "error",
-          trigger: "manual",
-        },
-      ]);
     } else {
       setResult(`Automation completed for ${name || "unknown user"}`);
-      setHistory((prev) => [
-        ...prev,
-        {
-          ...executionPayload,
-          status: "success",
-          trigger: "manual",
-        },
-      ]);
     }
 
     setLoading(false);
   }
 
-  return (    
+  return (
     <main className="min-h-screen flex items-center">
       <div className="mx-auto max-w-5xl xl:flex p-10 xl:p-6">
         <div className="xl:w-1/2">
           <div className="mb-10">
             <h1 className="text-2xl pb-4">Automation Dashboard</h1>
-      
+
             <p className="text-sm opacity-80 max-w-xl">
-              Run workflows, track execution status, and monitor automation results in
-              one place. Designed for teams using tools like Make, Zapier, or
-              GoHighLevel.
+              Run workflows, track execution status, and monitor automation
+              results in one place. Designed for teams using tools like Make,
+              Zapier, or GoHighLevel.
             </p>
           </div>
-    
+
           <div className="border rounded-xl min-w-fit p-6 mb-10">
             <form
               onSubmit={(e) => {
@@ -93,7 +96,7 @@ export default function Home() {
                   className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
                 />
               </div>
-      
+
               <div className=" mt-4">
                 <h2>Email</h2>
                 <input
@@ -104,7 +107,7 @@ export default function Home() {
                   className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
                 />
               </div>
-      
+
               <div className=" mt-4">
                 <h2>Workflow name</h2>
                 <input
@@ -116,7 +119,7 @@ export default function Home() {
                   placeholder="e.g. Lead intake → CRM"
                 />
               </div>
-      
+
               <button
                 type="submit"
                 disabled={loading}
@@ -126,7 +129,7 @@ export default function Home() {
               </button>
             </form>
           </div>
-    
+
           <div className="mt-4">
             <strong>Result</strong>
             <div className="mt-2 p-4 max-w-max">
@@ -139,13 +142,15 @@ export default function Home() {
                   {error}
                 </p>
               )}
-              {!loading && !result && !error && <p className="opacity-50">No result yet.</p>}
+              {!loading && !result && !error && (
+                <p className="opacity-50">No result yet.</p>
+              )}
             </div>
           </div>
         </div>
-  
+
         <hr className="xl:mr-20 my-6" />
-  
+
         <div className="xl:w-1/2">
           <HistoryPanel history={history} />
           <button
@@ -155,7 +160,6 @@ export default function Home() {
             Clear history (dev)
           </button>
         </div>
-
       </div>
     </main>
   );

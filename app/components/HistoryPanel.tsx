@@ -76,9 +76,11 @@ export default function HistoryPanel({ history }: { history: History[] }) {
           >
             <h2
               className={`inline-block px-2 py-1 rounded ${
-                item.status === "success"
-                  ? "bg-green-200 text-green-900"
-                  : "bg-red-200 text-red-900"
+                item.status === "pending"
+                  ? "bg-yellow-400 text-yellow-900"
+                  : item.status === "success"
+                    ? "bg-green-200 text-green-900"
+                    : "bg-red-200 text-red-900"
               }`}
             >
               Execution status: {item.status.toUpperCase()}
