@@ -18,6 +18,11 @@ export default function Home() {
   );
 
   // This will later trigger a Make webhook
+  // Execution lifecycle:
+  // 1. Execution is created with status = "pending"
+  // 2. External system (Make) runs the workflow
+  // 3. Callback webhook updates execution to success/error
+  // This dashboard only reflects final state after callback
   async function runAutomation() {
     setLoading(true);
     setResult(null);
@@ -71,12 +76,14 @@ export default function Home() {
         <div className="xl:w-1/2">
           <div className="mb-10">
             <h1 className="text-2xl pb-4">Automation Dashboard</h1>
-
             <p className="text-sm opacity-80 max-w-xl">
               Run workflows, track execution status, and monitor automation
               results in one place. Designed for teams using tools like Make,
               Zapier, or GoHighLevel.
             </p>
+            {/* <p className="text-sm opacity-80 max-w-xl"> 
+              A client-safe execution tracker for automation workflows (dev)
+            </p> */}
           </div>
 
           <div className="border rounded-xl min-w-fit p-6 mb-10">
@@ -93,7 +100,8 @@ export default function Home() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
+                  className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
+                  placeholder="Bob or something"
                 />
               </div>
 
@@ -104,7 +112,8 @@ export default function Home() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
+                  className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
+                  placeholder="you@example.com"
                 />
               </div>
 
@@ -115,7 +124,7 @@ export default function Home() {
                   type="text"
                   value={workflowName}
                   onChange={(e) => setWorkflowName(e.target.value)}
-                  className="border border-amber-100 rounded-md text-emerald-50 mt-1 pl-1 xl:pr-[40%] sm:pr-[30%]"
+                  className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
                   placeholder="e.g. Lead intake → CRM"
                 />
               </div>

@@ -23,7 +23,12 @@ export default function HistoryPanel({ history }: { history: History[] }) {
     <div className="">
       <h1 className="text-2xl">Execution history</h1>
 
-      <p className="text-sm mt-2 opacity-80">
+      <p className="text-sm mt-2 opacity-60">
+        Execution history for manual, webhook, and automated triggers across
+        automation tools.
+      </p>
+
+      <p className="text-sm mt-6 opacity-80">
         Total runs: {totalRuns} • Success: {successRuns} • Errors: {errorRuns}
       </p>
 
@@ -74,6 +79,11 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             key={`${item.timestamp}-${item.email}`}
             className={`border rounded-lg p-3 mb-6 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-400"}`}
           >
+            {item.status === "pending" && (
+              <p className="text-xs opacity-50 my-1">
+                Waiting for automation platform response…
+              </p>
+            )}
             <h2
               className={`inline-block px-2 py-1 rounded ${
                 item.status === "pending"
@@ -91,7 +101,8 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             <h2>Created at: {item.timestamp}</h2>
             <h2>Name: {item.name}</h2>
             <h2>Email: {item.email}</h2>
-            <h2>Triggered via: {item.trigger}</h2>
+            <h2>Triggered source: {item.trigger.toUpperCase()}</h2>
+            <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
           </div>
         ))}
       </div>
