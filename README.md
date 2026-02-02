@@ -7,11 +7,30 @@ Automation platforms already provide execution logs, but they are:
 - Not client-facing
 - Fragmented across systems
 
-This dashboard acts as a unified, client-safe execution layer
-that standardizes how runs are viewed regardless of trigger source.
+This dashboard acts as a unified, client-safe execution layer that standardizes how runs are viewed regardless of trigger source.
 
 This dashboard gives clients visibility into automation runs without exposing the automation platform itself.
 
+
+## Who this dashboard is for
+
+This dashboard exists so that clients can see whether automations are working—without logging into Make, Zapier, or internal tools.
+
+This dashboard is designed for client-facing visibility, not automation configuration.
+
+It is intended for:
+- Clients who want to know whether automations ran successfully
+- Clients who do not want access to internal automation tools (Make, Zapier, etc.)
+- Agencies or freelancers managing automations on behalf of clients
+- Retainer-based automation work where ongoing reliability matters
+
+It is not intended for:
+- Debugging or building automations
+- Viewing raw execution trees, payloads, or internal logic
+- Replacing automation platforms like Make or Zapier
+
+Automation platforms handle internals.
+This dashboard communicates outcomes.
 
 ## Next steps (planned)
 - Replace mock execution with Make webhook trigger

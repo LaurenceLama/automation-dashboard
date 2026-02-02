@@ -101,7 +101,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             <h2>Created at: {item.timestamp}</h2>
             <h2>Name: {item.name}</h2>
             <h2>Email: {item.email}</h2>
-            <h2>Triggered source: {item.trigger.toUpperCase()}</h2>
+            <h2>Triggered source: {item.trigger.toUpperCase()}</h2> {/* 'manual' - for demo purposes btw */}
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
           </div>
         ))}

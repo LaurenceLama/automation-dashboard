@@ -134,7 +134,7 @@ export default function Home() {
                 disabled={loading}
                 className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
               >
-                {loading ? "Running..." : "Run workflow"}
+                {loading ? "Running..." : "Simulate execution (dev)"}
               </button>
             </form>
           </div>
