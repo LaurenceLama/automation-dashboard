@@ -1,3 +1,10 @@
+This dashboard lets business owners see whether their automations worked — without logging into automation tools like Make or Zapier.
+
+## In simple terms
+
+This dashboard shows whether your automations ran successfully — without you needing to access or understand the automation tools behind them.
+
+
 ## Vision
 
 This repo aims for a lightweight execution dashboard that lets teams see how automations run across tools like Make, Zapier, and GoHighLevel — without jumping between platforms.
@@ -14,7 +21,7 @@ This dashboard gives clients visibility into automation runs without exposing th
 
 ## Who this dashboard is for
 
-This dashboard exists so that clients can see whether automations are working—without logging into Make, Zapier, or internal tools.
+This dashboard exists so that clients can see whether automations are working — without logging into Make, Zapier, or internal tools.
 
 This dashboard is designed for client-facing visibility, not automation configuration.
 
@@ -31,6 +38,7 @@ It is not intended for:
 
 Automation platforms handle internals.
 This dashboard communicates outcomes.
+
 
 ## Next steps (planned)
 - Replace mock execution with Make webhook trigger

@@ -67,17 +67,17 @@ export default function HistoryPanel({ history }: { history: History[] }) {
         </button>
       </div>
 
-      <div className="mt-2 space-y-2">
-        {filteredHistory.length === 0 && (
-          <p className="mb-4 opacity-70 text-md font-medium">
-            Executions and statuses will appear here once a workflow runs.
-          </p>
-        )}
+      {filteredHistory.length === 0 && (
+        <p className="opacity-70 text-md font-medium">
+          Executions and statuses will appear here once a workflow runs.
+        </p>
+      )}
 
+      <div className="mt-2 space-y-6">
         {filteredHistory.map((item) => (
           <div
             key={`${item.timestamp}-${item.email}`}
-            className={`border rounded-lg p-3 mb-6 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-400"}`}
+            className={`border space-y-1.5 rounded-lg p-3 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-400"}`}
           >
             {item.status === "pending" && (
               <p className="text-xs opacity-50 my-1">

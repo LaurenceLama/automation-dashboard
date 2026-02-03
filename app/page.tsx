@@ -101,7 +101,7 @@ export default function Home() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
-                  placeholder="Bob or something"
+                  placeholder="Kyle"
                 />
               </div>
 
@@ -164,7 +164,7 @@ export default function Home() {
           <HistoryPanel history={history} />
           <button
             onClick={() => setHistory([])}
-            className="p-1 mb-2 text-xs underline opacity-60 hover:opacity-100 border cursor-pointer"
+            className="p-1 mt-6 text-xs underline opacity-60 hover:opacity-100 border cursor-pointer"
           >
             Clear history (dev)
           </button>
