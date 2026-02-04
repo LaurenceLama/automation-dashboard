@@ -4,12 +4,12 @@ This dashboard lets business owners see whether their automations worked — wit
 
 This dashboard shows whether your automations ran successfully — without you needing to access or understand the automation tools behind them.
 
-
 ## Vision
 
 This repo aims for a lightweight execution dashboard that lets teams see how automations run across tools like Make, Zapier, and GoHighLevel — without jumping between platforms.
 
 Automation platforms already provide execution logs, but they are:
+
 - Tool-specific
 - Not client-facing
 - Fragmented across systems
@@ -18,7 +18,6 @@ This dashboard acts as a unified, client-safe execution layer that standardizes 
 
 This dashboard gives clients visibility into automation runs without exposing the automation platform itself.
 
-
 ## Who this dashboard is for
 
 This dashboard exists so that clients can see whether automations are working — without logging into Make, Zapier, or internal tools.
@@ -26,12 +25,14 @@ This dashboard exists so that clients can see whether automations are working �
 This dashboard is designed for client-facing visibility, not automation configuration.
 
 It is intended for:
+
 - Clients who want to know whether automations ran successfully
 - Clients who do not want access to internal automation tools (Make, Zapier, etc.)
 - Agencies or freelancers managing automations on behalf of clients
 - Retainer-based automation work where ongoing reliability matters
 
 It is not intended for:
+
 - Debugging or building automations
 - Viewing raw execution trees, payloads, or internal logic
 - Replacing automation platforms like Make or Zapier
@@ -39,15 +40,36 @@ It is not intended for:
 Automation platforms handle internals.
 This dashboard communicates outcomes.
 
+## Execution Lifecycle
+
+1. An execution is created with status = "pending"
+2. An external automation platform (Make) runs the workflow
+3. Make sends a callback webhook with the final result
+4. The execution is updated to either:
+   - "success"
+   - "error"
+
+The dashboard does not assume execution completion until a callback is received.
+
+## Webhook Callback Contract (Make → Dashboard)
+
+Expected payload:
+{
+  executionId: string;
+  status: "success" | "error";
+  timestamp: string; 
+  errorMessage?: string;
+}
+
+The executionId is the single source of truth.
+Callbacks without a matching executionId are ignored.
 
 ## Next steps (planned)
+
 - Replace mock execution with Make webhook trigger
 - Support webhook callbacks for success/error updates
-- Add execution states (pending → success/error)
+- Add execution states (pending → success/error) DONE
 - Optional: role-based or client-safe views
-
-
-
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
