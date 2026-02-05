@@ -13,11 +13,25 @@ export default function HistoryPanel({ history }: { history: History[] }) {
     return item.status === filter;
   });
 
+  const sortedHistory = [...filteredHistory].sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  );
+
+  // For prioritizing pending executions display
+  // const sortedHistory = [...filteredHistory].sort((a, b) => {
+  //   if (a.status === "pending" && b.status !== "pending") return -1;
+  //   if (a.status !== "pending" && b.status === "pending") return 1;
+
+  //   return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+  // });
+
   const totalRuns = history.length;
   const successRuns = history.filter(
     (item) => item.status === "success",
   ).length;
   const errorRuns = history.filter((item) => item.status === "error").length;
+
+  const hasPending = history.some((item) => item.status === "pending");
 
   return (
     <div className="">
@@ -74,10 +88,14 @@ export default function HistoryPanel({ history }: { history: History[] }) {
       )}
 
       <div className="mt-2 space-y-6">
-        {filteredHistory.map((item) => (
+        {sortedHistory.map((item) => (
           <div
             key={`${item.timestamp}-${item.email}`}
-            className={`border space-y-1.5 rounded-lg p-3 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-400"}`}
+            className={`border space-y-1.5 rounded-lg p-3 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-400"} transition-opacity ${
+              hasPending && item.status !== "pending"
+                ? "opacity-65"
+                : "opacity-100"
+            }`}
           >
             {/* {item.status === "pending" && (
               <div className="flex items-center gap-2">
