@@ -24,14 +24,17 @@ export default function HistoryPanel({ history }: { history: History[] }) {
 
   //   return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
   // });
-
+  
   const totalRuns = history.length;
   const successRuns = history.filter(
     (item) => item.status === "success",
   ).length;
   const errorRuns = history.filter((item) => item.status === "error").length;
-
+  
   const hasPending = history.some((item) => item.status === "pending");
+  
+  // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
+
 
   return (
     <div className="">

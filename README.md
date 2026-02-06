@@ -1,13 +1,13 @@
-### Automation Execution Dashboard
+## Automation Execution Dashboard
 A client-safe dashboard for small businesses to monitor automation runs (Make, GHL, Zapier, etc.) without giving them access to the automation platform.
 
 
-## In simple terms
+### In simple terms
 
 This dashboard shows whether your automations ran successfully — without you needing to access or understand the automation tools behind them.
 
 
-## Vision
+### Vision
 
 This repo aims for a lightweight execution dashboard that lets teams see how automations run across tools like Make, Zapier, and GoHighLevel — without jumping between platforms.
 
@@ -22,7 +22,7 @@ This dashboard acts as a unified, client-safe execution layer that standardizes 
 This dashboard gives clients visibility into automation runs without exposing the automation platform itself.
 
 
-## Why this exists (real-world use case)
+### Why this exists (real-world use case)
 
 Agencies often build automations for clients using tools like Make or Zapier.
 
@@ -31,7 +31,7 @@ Clients want to know whether things are working — but do not want access to th
 So, this dashboard solves that gap by providing a client-safe execution view while keeping automation internals private.
 
 
-## Who this dashboard is for
+### Who this dashboard is for
 
 This dashboard exists so that clients can see whether automations are working — without logging into Make, Zapier, or internal tools.
 
@@ -54,7 +54,7 @@ Automation platforms handle internals.
 This dashboard communicates outcomes.
 
 
-## What clients see vs What I handle
+### What clients see vs What I handle
 
 What clients see
 
@@ -73,7 +73,7 @@ What I handle
 - Execution tracking logic
 
 
-## Execution Lifecycle
+### Execution Lifecycle
 
 1. An execution is created with status = "pending"
 2. An external automation platform (Make) runs the workflow
@@ -85,7 +85,7 @@ What I handle
 The dashboard does not assume execution completion until a callback is received.
 
 
-## Webhook Callback Contract (Make → Dashboard)
+### Webhook Callback Contract (Make → Dashboard)
 
 Expected payload:
 {
@@ -99,7 +99,16 @@ The executionId is the single source of truth.
 Callbacks without a matching executionId are ignored.
 
 
-## Planned integrations
+### Execution State Guarantees
+
+- Every execution displayed starts in pending
+- Only one final callback is accepted
+- Final states are immutable
+- Duplicate or late callbacks are ignored
+- Executions do not remain pending indefinitely
+
+
+### Planned integrations
 
 - Make (webhooks & callbacks)
 
@@ -107,7 +116,7 @@ Callbacks without a matching executionId are ignored.
 
 - Other webhook-based automation tools
 
-## Next steps (planned)
+### Next steps (planned)
 
 - Replace mock execution with Make webhook trigger
 - Support webhook callbacks for success/error updates
