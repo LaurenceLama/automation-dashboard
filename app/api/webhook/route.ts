@@ -26,20 +26,20 @@ export async function POST(req: Request) {
     );
   }
 
-  const execution = executions[executionId];
+  const existingExecution = executions[executionId];
 
   // If execution does not exist, ignore
-  if (!execution) {
+  if (!existingExecution) {
     return NextResponse.json({ ignored: true });
   }
 
   // State machine enforcement 
-  if (execution.status !== "pending") {
+  if (existingExecution.status !== "pending") {
     return NextResponse.json({ ignored: true });
   }
 
   executions[executionId] = {
-    ...execution,
+    ...existingExecution,
     status,
     errorMessage,
     timestamp,

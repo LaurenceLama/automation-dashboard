@@ -2,6 +2,7 @@
 
 import { History } from "../atoms/History";
 import { useState } from "react";
+import { applyExecutionTimeouts } from "../lib/timeout";
 
 type Filter = "all" | "success" | "error";
 
@@ -13,7 +14,12 @@ export default function HistoryPanel({ history }: { history: History[] }) {
     return item.status === filter;
   });
 
-  const sortedHistory = [...filteredHistory].sort(
+  // Temporary client-side timeout handling.
+  // Will be replaced by server-side job in production.
+  // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
+  const timedHistory = applyExecutionTimeouts(filteredHistory);
+
+  const orderedHistory = [...timedHistory].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
   );
 
@@ -24,17 +30,14 @@ export default function HistoryPanel({ history }: { history: History[] }) {
 
   //   return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
   // });
-  
+
   const totalRuns = history.length;
   const successRuns = history.filter(
     (item) => item.status === "success",
   ).length;
   const errorRuns = history.filter((item) => item.status === "error").length;
-  
-  const hasPending = history.some((item) => item.status === "pending");
-  
-  // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
 
+  const hasPending = history.some((item) => item.status === "pending");
 
   return (
     <div className="">
@@ -91,7 +94,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
       )}
 
       <div className="mt-2 space-y-6">
-        {sortedHistory.map((item) => (
+        {orderedHistory.map((item) => (
           <div
             key={`${item.timestamp}-${item.email}`}
             className={`border space-y-1.5 rounded-lg p-3 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-400"} transition-opacity ${
@@ -152,6 +155,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             <h2>Triggered source: {item.trigger.toUpperCase()}</h2>{" "}
             {/* 'manual' - for demo purposes btw */}
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
+            <h2 className="opacity-50">Error message: {item.errorMessage}</h2>
           </div>
         ))}
       </div>
