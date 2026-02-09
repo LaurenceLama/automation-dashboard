@@ -1,12 +1,18 @@
 "use client";
 
 import { History } from "../atoms/History";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { applyExecutionTimeouts } from "../lib/timeout";
 
 type Filter = "all" | "success" | "error";
 
-export default function HistoryPanel({ history }: { history: History[] }) {
+export default function HistoryPanel({
+  history,
+  onTimeout,
+}: {
+  history: History[];
+  onTimeout: () => void;
+}) {
   const [filter, setFilter] = useState<Filter>("all");
 
   const filteredHistory = history.filter((item) => {
@@ -14,10 +20,40 @@ export default function HistoryPanel({ history }: { history: History[] }) {
     return item.status === filter;
   });
 
+  // const hasTimedOutExecution = timedHistory.some(
+  //   (e) => e.status === "error" && e.errorMessage?.includes("timed out"),
+  // );
+
+  // if (hasTimedOutExecution) {
+  //   setLoading(false);
+  //   setError("Execution timed out.");
+  // }
+
   // Temporary client-side timeout handling.
   // Will be replaced by server-side job in production.
   // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
   const timedHistory = applyExecutionTimeouts(filteredHistory);
+
+  const [, forceRender] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      forceRender((n) => n + 1);
+    }, 1000); // check every second
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const hasTimedOut = timedHistory.some(
+      (e) => e.status === "error" && e.errorMessage?.includes("timed out"),
+    );
+
+    if (hasTimedOut) {
+      onTimeout();
+    }
+  }, [timedHistory, onTimeout]);
+  
 
   const orderedHistory = [...timedHistory].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
@@ -37,7 +73,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
   ).length;
   const errorRuns = history.filter((item) => item.status === "error").length;
 
-  const hasPending = history.some((item) => item.status === "pending");
+  const hasPending = timedHistory.some((item) => item.status === "pending");
 
   return (
     <div className="">
@@ -149,13 +185,15 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             <h2>
               Workflow name: <b>{item.workflowName}</b>
             </h2>
-            <h2>Created at: {item.timestamp}</h2>
+            <h2>Created at: {new Date(item.timestamp).toLocaleString()}</h2>
             <h2>Name: {item.name}</h2>
             <h2>Email: {item.email}</h2>
             <h2>Triggered source: {item.trigger.toUpperCase()}</h2>{" "}
             {/* 'manual' - for demo purposes btw */}
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
-            <h2 className="opacity-50">Error message: {item.errorMessage}</h2>
+            {item.errorMessage && (
+              <h2 className="opacity-50">Error message: {item.errorMessage}</h2>
+            )}
           </div>
         ))}
       </div>

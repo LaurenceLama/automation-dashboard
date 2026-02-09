@@ -17,6 +17,11 @@ export default function Home() {
     [],
   );
 
+  function handleExecutionTimeout() {
+    setLoading(false);
+    setError("Execution timed out bro."); // might mess up a scenario where card has error status but did not reached the timeout period
+  }
+
   // This will later trigger a Make webhook
   async function runAutomation() {
     setLoading(true);
@@ -24,7 +29,8 @@ export default function Home() {
     setError(null);
 
     const executionId = crypto.randomUUID();
-    const timestamp = new Date().toLocaleString();
+
+    const timestamp = new Date().toISOString();
 
     const baseExecution: History = {
       executionId,
@@ -38,31 +44,37 @@ export default function Home() {
 
     setHistory((prev) => [...prev, baseExecution]);
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const SIMULATE_PLATFORM_RESPONSE = false;
 
-    const shouldFail = Math.random() < 0.3;
+    // Current Bug: if there is a previous card with a timeout error message, proceeding cards after it have the error displaying instead of {loading && <p>Processing...</p>}
+    if (SIMULATE_PLATFORM_RESPONSE) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    setHistory((prev) =>
-      prev.map((item) =>
-        item.executionId === executionId
-          ? {
-              ...item,
-              status: shouldFail ? "error" : "success",
-              ...(shouldFail && {
-                errorMessage: "Automation failed. Please try again.",
-              }),
-            }
-          : item,
-      ),
-    );
+      const shouldFail = Math.random() < 0.3;
 
-    if (shouldFail) {
-      setError("Automation failed. Please try again.");
-    } else {
-      setResult(`Automation completed for ${name || "unknown user"}`);
+      setHistory((prev) =>
+        prev.map((item) =>
+          item.executionId === executionId
+            ? {
+                ...item,
+                status: shouldFail ? "error" : "success",
+                ...(shouldFail && {
+                  errorMessage: "Automation failed. Please try again.",
+                }),
+              }
+            : item,
+        ),
+      );
+
+      if (shouldFail) {
+        setError("Automation failed. Please try again.");
+      } else {
+        setResult(`Automation completed for ${name || "unknown user"}`);
+      }
+
+      setLoading(false);
+      return;
     }
-
-    setLoading(false);
   }
 
   return (
@@ -139,7 +151,7 @@ export default function Home() {
               {!loading && result && (
                 <p className="rounded-lg p-4 border">{result}</p>
               )}
-              {!loading && error && (
+              {!loading && !result && error && (
                 <p className="rounded-lg p-4 border border-red-400 text-red-600">
                   {error}
                 </p>
@@ -154,7 +166,7 @@ export default function Home() {
         <hr className="xl:mr-20 my-6" />
 
         <div className="xl:w-1/2">
-          <HistoryPanel history={history} />
+          <HistoryPanel history={history} onTimeout={handleExecutionTimeout} />
           <button
             onClick={() => setHistory([])}
             className="p-1 mt-6 text-xs underline opacity-60 hover:opacity-100 border cursor-pointer"
