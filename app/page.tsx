@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import HistoryPanel from "./components/HistoryPanel";
 import { History } from "./atoms/History";
 import { useLocalStorage } from "./hooks/useLocalStorage";
@@ -8,7 +8,7 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 export default function Home() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false); to be deleted
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [workflowName, setWorkflowName] = useState("");
@@ -17,14 +17,23 @@ export default function Home() {
     [],
   );
 
+  const loading = history.some((h) => h.status === "pending");
+
+  // useEffect(() => {    *temp solution for fixing timeout logic - might be removed I think
+  //   if (!hasPending && loading) {
+  //     // setLoading(false); 
+  //     setError(null);
+  //   }
+  // }, [hasPending, loading]);
+
   function handleExecutionTimeout() {
-    setLoading(false);
+    // setLoading(false); to be deleted
     setError("Execution timed out bro."); // might mess up a scenario where card has error status but did not reached the timeout period
   }
 
   // This will later trigger a Make webhook
   async function runAutomation() {
-    setLoading(true);
+    // setLoading(true); to be deleted
     setResult(null);
     setError(null);
 
@@ -42,6 +51,7 @@ export default function Home() {
       trigger: "manual",
     };
 
+    // Create execution
     setHistory((prev) => [...prev, baseExecution]);
 
     const SIMULATE_PLATFORM_RESPONSE = false;
@@ -66,13 +76,13 @@ export default function Home() {
         ),
       );
 
-      if (shouldFail) {
-        setError("Automation failed. Please try again.");
-      } else {
-        setResult(`Automation completed for ${name || "unknown user"}`);
-      }
+      // if (shouldFail) {
+      //   setError("Automation failed. Please try again.");
+      // } else {
+      //   setResult(`Automation completed for ${name || "unknown user"}`);
+      // }
 
-      setLoading(false);
+      // setLoading(false); to be deleted
       return;
     }
   }

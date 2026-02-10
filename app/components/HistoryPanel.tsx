@@ -6,13 +6,7 @@ import { applyExecutionTimeouts } from "../lib/timeout";
 
 type Filter = "all" | "success" | "error";
 
-export default function HistoryPanel({
-  history,
-  onTimeout,
-}: {
-  history: History[];
-  onTimeout: () => void;
-}) {
+export default function HistoryPanel({ history, onTimeout,}: { history: History[]; onTimeout: () => void;}) {
   const [filter, setFilter] = useState<Filter>("all");
 
   const filteredHistory = history.filter((item) => {
