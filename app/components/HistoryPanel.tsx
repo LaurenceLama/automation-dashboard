@@ -6,7 +6,7 @@ import { applyExecutionTimeouts } from "../lib/timeout";
 
 type Filter = "all" | "success" | "error";
 
-export default function HistoryPanel({ history, onTimeout,}: { history: History[]; onTimeout: () => void;}) {
+export default function HistoryPanel({ history }: { history: History[]}) {
   const [filter, setFilter] = useState<Filter>("all");
 
   const filteredHistory = history.filter((item) => {
@@ -14,60 +14,41 @@ export default function HistoryPanel({ history, onTimeout,}: { history: History[
     return item.status === filter;
   });
 
-  // const hasTimedOutExecution = timedHistory.some(
-  //   (e) => e.status === "error" && e.errorMessage?.includes("timed out"),
-  // );
-
-  // if (hasTimedOutExecution) {
-  //   setLoading(false);
-  //   setError("Execution timed out.");
-  // }
-
-  // Temporary client-side timeout handling.
   // Will be replaced by server-side job in production.
   // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
   const timedHistory = applyExecutionTimeouts(filteredHistory);
 
+  // Force re-check timeout every second
   const [, forceRender] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       forceRender((n) => n + 1);
-    }, 1000); // check every second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
-
-  useEffect(() => {
-    const hasTimedOut = timedHistory.some(
-      (e) => e.status === "error" && e.errorMessage?.includes("timed out"),
-    );
-
-    if (hasTimedOut) {
-      onTimeout();
-    }
-  }, [timedHistory, onTimeout]);
   
 
   const orderedHistory = [...timedHistory].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
   );
 
-  // For prioritizing pending executions display
+  const totalRuns = history.length;
+  const successRuns = history.filter(
+    (item) => item.status === "success",
+  ).length;
+  const errorRuns = history.filter((item) => item.status === "error").length;
+  
+  const hasPending = timedHistory.some((item) => item.status === "pending");
+
+  // For prioritizing pending executions display (maybe for later versions / if requested)
   // const sortedHistory = [...filteredHistory].sort((a, b) => {
   //   if (a.status === "pending" && b.status !== "pending") return -1;
   //   if (a.status !== "pending" && b.status === "pending") return 1;
 
   //   return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
   // });
-
-  const totalRuns = history.length;
-  const successRuns = history.filter(
-    (item) => item.status === "success",
-  ).length;
-  const errorRuns = history.filter((item) => item.status === "error").length;
-
-  const hasPending = timedHistory.some((item) => item.status === "pending");
 
   return (
     <div className="">
@@ -83,38 +64,20 @@ export default function HistoryPanel({ history, onTimeout,}: { history: History[
       </p>
 
       <div className="my-4 flex gap-2">
-        <button
-          onClick={() => setFilter("all")}
-          className={
-            filter === "all"
-              ? "font-bold border p-2 max-w-max underline cursor-pointer"
-              : "cursor-pointer"
-          }
-        >
-          All
-        </button>
-        <button
-          onClick={() => setFilter("success")}
-          className={
-            filter === "success"
-              ? "font-bold border p-2 max-w-max underline border-green-400 cursor-pointer"
-              : "border-red-400 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          }
-          disabled={history.length === 0}
-        >
-          Success
-        </button>
-        <button
-          onClick={() => setFilter("error")}
-          className={
-            filter === "error"
-              ? "font-bold border p-2 max-w-max underline border-red-400 cursor-pointer"
-              : "border-red-400 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-          }
-          disabled={history.length === 0}
-        >
-          Error
-        </button>
+        {(["all", "success", "error"] as Filter[]).map((type) => (
+          <button
+            key={type}
+            onClick={() => setFilter(type)}
+            className={
+              filter === type
+                ? "font-bold border p-2 underline"
+                : "cursor-pointer"
+            }
+            disabled={history.length === 0}
+          >
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+          </button>
+        ))}
       </div>
 
       {filteredHistory.length === 0 && (
@@ -126,14 +89,14 @@ export default function HistoryPanel({ history, onTimeout,}: { history: History[
       <div className="mt-2 space-y-6">
         {orderedHistory.map((item) => (
           <div
-            key={`${item.timestamp}-${item.email}`}
+            key={item.executionId}
             className={`border space-y-1.5 rounded-lg p-3 max-w-max text-sm ${item.status === "error" ? "border-red-400" : "border-green-400"} transition-opacity ${
               hasPending && item.status !== "pending"
                 ? "opacity-65"
                 : "opacity-100"
             }`}
           >
-            {/* {item.status === "pending" && (
+            {/* {item.status === "pending" && (  // For later versions
               <div className="flex items-center gap-2">
                 <span className="w-4 h-4 animate-spin rounded-full border-2 border-amber-400 border-t-transparent"></span>
                 <p className="text-xs opacity-70">
@@ -165,6 +128,7 @@ export default function HistoryPanel({ history, onTimeout,}: { history: History[
                 </p>
               </div>
             )}
+            
             <h2
               className={`inline-block px-2 py-1 rounded ${
                 item.status === "pending"
@@ -176,15 +140,21 @@ export default function HistoryPanel({ history, onTimeout,}: { history: History[
             >
               Execution status: {item.status.toUpperCase()}
             </h2>
+            
             <h2>
               Workflow name: <b>{item.workflowName}</b>
             </h2>
+            
             <h2>Created at: {new Date(item.timestamp).toLocaleString()}</h2>
+
             <h2>Name: {item.name}</h2>
+
             <h2>Email: {item.email}</h2>
-            <h2>Triggered source: {item.trigger.toUpperCase()}</h2>{" "}
-            {/* 'manual' - for demo purposes btw */}
+
+            <h2>Triggered source: {item.trigger.toUpperCase()}</h2> {/* 'manual' - for demo purposes btw */}
+
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
+
             {item.errorMessage && (
               <h2 className="opacity-50">Error message: {item.errorMessage}</h2>
             )}
