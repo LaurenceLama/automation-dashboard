@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import HistoryPanel from "./components/HistoryPanel";
 import { History } from "./atoms/History";
 import { useLocalStorage } from "./hooks/useLocalStorage";
+import { addExecution } from "./lib/executionUtils";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -26,6 +27,30 @@ export default function Home() {
         )[0]
       : null;
 
+  // Persist runAutomation process on mount (currently: it only persists on the 2nd refresh)
+  useEffect(() => {
+    const TIMEOUT_LIMIT = 5000; // same as your timeout
+    const now = Date.now();
+
+    setHistory((prev) =>
+      prev.map((item) => {
+        if (item.status === "pending") {
+          const executionTime = new Date(item.timestamp).getTime();
+
+          if (now - executionTime > TIMEOUT_LIMIT) {
+            return {
+              ...item,
+              status: "error",
+              errorType: "timeout",
+              errorMessage: "Execution timed out (page refreshed).",
+            };
+          }
+        }
+        return item;
+      }),
+    );
+  }, [setHistory]);
+
   // This will later trigger a Make webhook
   async function runAutomation() {
     const executionId = crypto.randomUUID();
@@ -39,15 +64,23 @@ export default function Home() {
       timestamp,
       status: "pending",
       trigger: "manual",
+      errorType: "timeout",
     };
 
     // Create execution
-    setHistory((prev) => [...prev, baseExecution]);
+    setHistory((prev) => addExecution(prev, baseExecution));
 
     const testFail = Math.random() < 0.3;
-    const testTimeout = Math.random()*10000 + 6000; // (dev)   ==  interaction from this - goes to pending, then error status with timeout error message pops on card (in < 10secs), then finalizes to success/error status, bypassing the timeout error status  
+    const testTimeout = 4000;
+    const TIMEOUT_LIMIT = 5000;
+
+    let finished = false;
 
     setTimeout(() => {
+      if (finished) return; // prevent override
+
+      finished = true;
+
       setHistory((prev) =>
         prev.map((item) =>
           item.executionId === executionId
@@ -63,7 +96,25 @@ export default function Home() {
       );
     }, testTimeout);
 
-    // In production this will trigger webhook
+    // Testing timeout display
+    setTimeout(() => {
+      if (finished) return;
+
+      finished = true;
+
+      setHistory((prev) =>
+        prev.map((item) =>
+          item.executionId === executionId
+            ? {
+                ...item,
+                status: "error",
+                errorType: "timeout",
+                errorMessage: "Execution timed out.",
+              }
+            : item,
+        ),
+      );
+    }, TIMEOUT_LIMIT);
   }
 
   return (

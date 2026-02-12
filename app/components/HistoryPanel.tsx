@@ -6,7 +6,7 @@ import { applyExecutionTimeouts } from "../lib/timeout";
 
 type Filter = "all" | "success" | "error";
 
-export default function HistoryPanel({ history }: { history: History[]}) {
+export default function HistoryPanel({ history }: { history: History[] }) {
   const [filter, setFilter] = useState<Filter>("all");
 
   const filteredHistory = history.filter((item) => {
@@ -28,7 +28,6 @@ export default function HistoryPanel({ history }: { history: History[]}) {
 
     return () => clearInterval(interval);
   }, []);
-  
 
   const orderedHistory = [...timedHistory].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
@@ -39,7 +38,7 @@ export default function HistoryPanel({ history }: { history: History[]}) {
     (item) => item.status === "success",
   ).length;
   const errorRuns = history.filter((item) => item.status === "error").length;
-  
+
   const hasPending = timedHistory.some((item) => item.status === "pending");
 
   // For prioritizing pending executions display (maybe for later versions / if requested)
@@ -128,7 +127,6 @@ export default function HistoryPanel({ history }: { history: History[]}) {
                 </p>
               </div>
             )}
-            
             <h2
               className={`inline-block px-2 py-1 rounded ${
                 item.status === "pending"
@@ -146,17 +144,21 @@ export default function HistoryPanel({ history }: { history: History[]}) {
             </h2>
             
             <h2>Created at: {new Date(item.timestamp).toLocaleString()}</h2>
-
+            
             <h2>Name: {item.name}</h2>
 
             <h2>Email: {item.email}</h2>
-
+            
             <h2>Triggered source: {item.trigger.toUpperCase()}</h2> {/* 'manual' - for demo purposes btw */}
-
+            
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
 
-            {item.errorMessage && (
+            {item.status === "error" && item.errorType === "timeout" ? (
               <h2 className="opacity-50">Error message: {item.errorMessage}</h2>
+            ) : item.status === "success" || item.status === "pending" ? (
+              ""
+            ) : (
+              <h2 className="opacity-50">Error message: ⚠ Timed Out</h2>
             )}
           </div>
         ))}

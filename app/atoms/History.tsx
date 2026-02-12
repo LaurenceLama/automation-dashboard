@@ -16,6 +16,7 @@ export interface History {
   executionId: string; // since this is mostly helpful only for devs, must be on reduced opacity
 
   status: ExecutionStatus;
+  errorType: 'timeout';
 
 
   // Optional to display (depends on the future clients needs/requirements)
