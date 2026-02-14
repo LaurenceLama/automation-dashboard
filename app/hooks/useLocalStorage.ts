@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { applyExecutionTimeouts } from "../lib/timeout";
+import { History } from "../atoms/History";
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [value, setValue] = useState<T>(initialValue);
@@ -11,14 +13,32 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem(key);
+
       if (stored !== null) {
-        setValue(JSON.parse(stored));
+        const parsed: T = JSON.parse(stored);
+
+        // If this is History[], apply timeout recovery
+        if (Array.isArray(parsed)) {
+          const recovered = applyExecutionTimeouts(
+            parsed as History[],
+          ) as unknown as T;
+
+          setValue(recovered);
+
+          // Sync corrected version to storage
+          if (JSON.stringify(parsed) !== JSON.stringify(recovered)) {
+            localStorage.setItem(key, JSON.stringify(recovered));
+          }
+        } else {
+          setValue(parsed);
+        }
       }
     } catch {
       console.warn(`Failed to read localStorage key: ${key}`);
     }
   }, [key]);
 
+  // SAVE whenever value changes
   useEffect(() => {
     try {
       localStorage.setItem(key, JSON.stringify(value));

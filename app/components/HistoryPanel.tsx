@@ -2,7 +2,6 @@
 
 import { History } from "../atoms/History";
 import { useState, useEffect } from "react";
-import { applyExecutionTimeouts } from "../lib/timeout";
 
 type Filter = "all" | "success" | "error";
 
@@ -13,10 +12,6 @@ export default function HistoryPanel({ history }: { history: History[] }) {
     if (filter === "all") return true;
     return item.status === filter;
   });
-
-  // Will be replaced by server-side job in production.
-  // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
-  const timedHistory = applyExecutionTimeouts(filteredHistory);
 
   // Force re-check timeout every second
   const [, forceRender] = useState(0);
@@ -29,7 +24,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
     return () => clearInterval(interval);
   }, []);
 
-  const orderedHistory = [...timedHistory].sort(
+  const orderedHistory = [...filteredHistory].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
   );
 
@@ -39,7 +34,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
   ).length;
   const errorRuns = history.filter((item) => item.status === "error").length;
 
-  const hasPending = timedHistory.some((item) => item.status === "pending");
+  const hasPending = filteredHistory.some((item) => item.status === "pending");
 
   // For prioritizing pending executions display (maybe for later versions / if requested)
   // const sortedHistory = [...filteredHistory].sort((a, b) => {
@@ -153,13 +148,20 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
 
-            {item.status === "error" && item.errorType === "timeout" ? (
+            {/* {item.status === "error" && item.errorType === "timeout" ? (
               <h2 className="opacity-50">Error message: {item.errorMessage}</h2>
             ) : item.status === "success" || item.status === "pending" ? (
               ""
             ) : (
               <h2 className="opacity-50">Error message: ⚠ Timed Out</h2>
-            )}
+            )} */}
+
+            {item.status === "error" && (
+              <h2 className="opacity-50">
+               Error message: {item.errorMessage}
+              </h2>
+            )}  
+
           </div>
         ))}
       </div>

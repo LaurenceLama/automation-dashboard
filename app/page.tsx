@@ -5,6 +5,7 @@ import HistoryPanel from "./components/HistoryPanel";
 import { History } from "./atoms/History";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { addExecution } from "./lib/executionUtils";
+import { applyExecutionTimeouts } from "./lib/timeout";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -27,28 +28,31 @@ export default function Home() {
         )[0]
       : null;
 
-  // Persist runAutomation process on mount (currently: it only persists on the 2nd refresh)
+  // Execution Recovery Loop
+  // ------------------------------------------------
+  // Runs every second to reconcile execution state.
+  // If a pending execution exceeds the timeout window, it is automatically marked as "error: timeout".
+  //
+  // This solves the refresh problem:
+  // When the user refreshes, in-memory timers are lost.
+  // This recovery loop ensures executions never stay stuck in "pending" forever.
+  //
+  // In production, this acts as a client-side fallback.
+  // The primary state resolution should come from webhook callbacks or server updates.
   useEffect(() => {
-    const TIMEOUT_LIMIT = 5000; // same as your timeout
-    const now = Date.now();
+    const interval = setInterval(() => {
+      setHistory((prev) => {
+        const recovered = applyExecutionTimeouts(prev);
 
-    setHistory((prev) =>
-      prev.map((item) => {
-        if (item.status === "pending") {
-          const executionTime = new Date(item.timestamp).getTime();
-
-          if (now - executionTime > TIMEOUT_LIMIT) {
-            return {
-              ...item,
-              status: "error",
-              errorType: "timeout",
-              errorMessage: "Execution timed out (page refreshed).",
-            };
-          }
+        if (JSON.stringify(prev) !== JSON.stringify(recovered)) {
+          return recovered;
         }
-        return item;
-      }),
-    );
+
+        return prev;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, [setHistory]);
 
   // This will later trigger a Make webhook
@@ -64,15 +68,14 @@ export default function Home() {
       timestamp,
       status: "pending",
       trigger: "manual",
-      errorType: "timeout",
     };
 
     // Create execution
     setHistory((prev) => addExecution(prev, baseExecution));
 
     const testFail = Math.random() < 0.3;
-    const testTimeout = 4000;
-    const TIMEOUT_LIMIT = 5000;
+    const testTimeout = 2000;
+    const TIMEOUT_LIMIT = 4000;
 
     let finished = false;
 
