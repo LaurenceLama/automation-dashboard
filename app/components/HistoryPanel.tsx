@@ -148,17 +148,9 @@ export default function HistoryPanel({ history }: { history: History[] }) {
             
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
 
-            {/* {item.status === "error" && item.errorType === "timeout" ? (
-              <h2 className="opacity-50">Error message: {item.errorMessage}</h2>
-            ) : item.status === "success" || item.status === "pending" ? (
-              ""
-            ) : (
-              <h2 className="opacity-50">Error message: ⚠ Timed Out</h2>
-            )} */}
-
             {item.status === "error" && (
               <h2 className="opacity-50">
-               Error message: {item.errorMessage}
+               Error message: {item.errorMessage || "Execution Failed"}
               </h2>
             )}  
 

@@ -6,6 +6,7 @@ import { History } from "./atoms/History";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { addExecution } from "./lib/executionUtils";
 import { applyExecutionTimeouts } from "./lib/timeout";
+import { simulateWebhook } from "./api/simulateWebhook";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -73,45 +74,20 @@ export default function Home() {
     // Create execution
     setHistory((prev) => addExecution(prev, baseExecution));
 
-    const testFail = Math.random() < 0.3;
-    const testTimeout = 2000;
-    const TIMEOUT_LIMIT = 4000;
+    // Simulate backend webhook resolution
+    simulateWebhook(executionId, setHistory);
 
-    let finished = false;
+    // Timeout protection
+    const TIMEOUT_LIMIT = 8000;
 
     setTimeout(() => {
-      if (finished) return; // prevent override
-
-      finished = true;
-
       setHistory((prev) =>
         prev.map((item) =>
-          item.executionId === executionId
+          item.executionId === executionId && item.status === "pending"
             ? {
                 ...item,
-                status: testFail ? "error" : "success",
-                ...(testFail && {
-                  errorMessage: "Automation failed. Please try again.",
-                }),
-              }
-            : item,
-        ),
-      );
-    }, testTimeout);
-
-    // Testing timeout display
-    setTimeout(() => {
-      if (finished) return;
-
-      finished = true;
-
-      setHistory((prev) =>
-        prev.map((item) =>
-          item.executionId === executionId
-            ? {
-                ...item,
-                status: "error",
-                errorType: "timeout",
+                status: "error" as const,
+                errorType: "timeout" as const,
                 errorMessage: "Execution timed out.",
               }
             : item,
