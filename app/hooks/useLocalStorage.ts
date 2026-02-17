@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { applyExecutionTimeouts } from "../lib/timeout";
 import { History } from "../atoms/History";
+import { supabase } from "../lib/supabase";
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [value, setValue] = useState<T>(initialValue);
@@ -10,33 +11,49 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
   // LOAD once on mount
   // NOTE: React Compiler may warn about setState in effect.
   // This effect runs once and is safe by design.
+  // useEffect(() => {
+  //   try {
+  //     const stored = localStorage.getItem(key);
+
+  //     if (stored !== null) {
+  //       const parsed: T = JSON.parse(stored);
+
+  //       // If this is History[], apply timeout recovery
+  //       if (Array.isArray(parsed)) {
+  //         const recovered = applyExecutionTimeouts(
+  //           parsed as History[],
+  //         ) as unknown as T;
+
+  //         setValue(recovered);
+
+  //         // Sync corrected version to storage
+  //         if (JSON.stringify(parsed) !== JSON.stringify(recovered)) {
+  //           localStorage.setItem(key, JSON.stringify(recovered));
+  //         }
+  //       } else {
+  //         setValue(parsed);
+  //       }
+  //     }
+  //   } catch {
+  //     console.warn(`Failed to read localStorage key: ${key}`);
+  //   }
+  // }, [key]);
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(key);
+    const loadExecutions = async () => {
+      const { data } = await supabase
+        .from("executions")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      if (stored !== null) {
-        const parsed: T = JSON.parse(stored);
+      setHistory(data || []); // working on it
+    };
 
-        // If this is History[], apply timeout recovery
-        if (Array.isArray(parsed)) {
-          const recovered = applyExecutionTimeouts(
-            parsed as History[],
-          ) as unknown as T;
+    loadExecutions();
 
-          setValue(recovered);
+    const interval = setInterval(loadExecutions, 2000);
 
-          // Sync corrected version to storage
-          if (JSON.stringify(parsed) !== JSON.stringify(recovered)) {
-            localStorage.setItem(key, JSON.stringify(recovered));
-          }
-        } else {
-          setValue(parsed);
-        }
-      }
-    } catch {
-      console.warn(`Failed to read localStorage key: ${key}`);
-    }
-  }, [key]);
+    return () => clearInterval(interval);
+  }, []);
 
   // SAVE whenever value changes
   useEffect(() => {

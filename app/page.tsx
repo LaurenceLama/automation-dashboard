@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import HistoryPanel from "./components/HistoryPanel";
 import { History } from "./atoms/History";
 import { useLocalStorage } from "./hooks/useLocalStorage";
-import { addExecution } from "./lib/executionUtils";
 import { applyExecutionTimeouts } from "./lib/timeout";
-import { simulateWebhook } from "./api/simulateWebhook";
+import { simulateWebhook, WebhookEvent } from "./api/simulateWebhook";
+import { ExecutionManager } from "./lib/ExecutionManager";
+import { supabase } from "./lib/supabase";
 
 export default function Home() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [workflowName, setWorkflowName] = useState("");
+  // const [history, setHistory] = useState<any[]>([]);
   const [history, setHistory] = useLocalStorage<History[]>(
     "automation-history",
     [],
@@ -56,45 +58,88 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [setHistory]);
 
+  // Simulate webhook processor loop
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const queue: WebhookEvent[] = JSON.parse(
+        localStorage.getItem("webhook-queue") || "[]",
+      );
+
+      const now = Date.now();
+
+      const remaining: WebhookEvent[] = [];
+
+      queue.forEach((event) => {
+        if (event.executeAt <= now) {
+          const success = Math.random() > 0.2;
+
+          setHistory((prev) =>
+            ExecutionManager.resolveExecution(prev, event.executionId, {
+              status: success ? "success" : "error",
+              result: success
+                ? { message: "Completed successfully" }
+                : { message: "Execution failed" },
+              resolvedAt: Date.now(),
+            }),
+          );
+        } else {
+          remaining.push(event);
+        }
+      });
+
+      localStorage.setItem("webhook-queue", JSON.stringify(remaining));
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [setHistory]);
+
   // This will later trigger a Make webhook
   async function runAutomation() {
     const executionId = crypto.randomUUID();
-    const timestamp = new Date().toISOString();
 
-    const baseExecution: History = {
-      executionId,
-      name,
+    const { error } = await supabase.from("executions").insert({
+      execution_id: executionId,
+      workflow_name: workflowName,
       email,
-      workflowName,
-      timestamp,
       status: "pending",
-      trigger: "manual",
-    };
+    });
 
-    // Create execution
-    setHistory((prev) => addExecution(prev, baseExecution));
+    if (error) {
+      console.error(error);
+      return;
+    }
 
-    // Simulate backend webhook resolution
-    simulateWebhook(executionId, setHistory);
-
-    // Timeout protection
-    const TIMEOUT_LIMIT = 8000;
-
-    setTimeout(() => {
-      setHistory((prev) =>
-        prev.map((item) =>
-          item.executionId === executionId && item.status === "pending"
-            ? {
-                ...item,
-                status: "error" as const,
-                errorType: "timeout" as const,
-                errorMessage: "Execution timed out.",
-              }
-            : item,
-        ),
-      );
-    }, TIMEOUT_LIMIT);
+    // Later: send executionId to Make webhook
   }
+  // async function runAutomation() {
+  //   const executionId = crypto.randomUUID();
+  //   const timestamp = new Date().toISOString();
+
+  //   const baseExecution: History = {
+  //     executionId,
+  //     name,
+  //     email,
+  //     workflowName,
+  //     timestamp,
+  //     status: "pending",
+  //     trigger: "manual",
+  //   };
+
+  //   // Create execution
+  //   setHistory((prev) => ExecutionManager.createExecution(prev, baseExecution));
+
+  //   // Simulate backend webhook resolution
+  //   simulateWebhook(executionId);
+
+  //   // Timeout protection
+  //   const TIMEOUT_LIMIT = 8000;
+
+  //   setTimeout(() => {
+  //     setHistory((prev) =>
+  //       ExecutionManager.timeoutExecution(prev, executionId),
+  //     );
+  //   }, TIMEOUT_LIMIT);
+  // }
 
   return (
     <main className="min-h-screen flex items-center">

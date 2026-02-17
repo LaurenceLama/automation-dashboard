@@ -29,21 +29,3 @@ export function updateExecutionStatus(
   );
 }
 
-
-// export function getLatestExecution(history) {
-//   return [...history].sort((a, b) => b.timestamp - a.timestamp)[0];
-// }
-
-// export function isLoading(history) {
-//   return history.some(h => h.status === "pending");
-// }
-
-// export function addExecution(history, execution) {
-//   return [...history, execution];
-// }
-
-// export function updateExecutionStatus(history, id, status) {
-//   return history.map(e =>
-//     e.id === id ? { ...e, status } : e
-//   );
-// }
