@@ -3,18 +3,15 @@
 import { useEffect, useState } from "react";
 import HistoryPanel from "./components/HistoryPanel";
 import { History } from "./atoms/History";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useExecutions } from "./hooks/useExecutions";
 import { applyExecutionTimeouts } from "./lib/timeout";
-import { simulateWebhook, WebhookEvent } from "./api/simulateWebhook";
-import { ExecutionManager } from "./lib/ExecutionManager";
 import { supabase } from "./lib/supabase";
 
 export default function Home() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [workflowName, setWorkflowName] = useState("");
-  // const [history, setHistory] = useState<any[]>([]);
-  const [history, setHistory] = useLocalStorage<History[]>(
+  const [history, setHistory] = useExecutions<History[]>(
     "automation-history",
     [],
   );
@@ -22,7 +19,7 @@ export default function Home() {
   // Derived loading state
   const loading = history.some((h) => h.status === "pending");
 
-  // Always derive latest execution
+  // Show latest execution first
   const latestExecution =
     history.length > 0
       ? [...history].sort(
@@ -58,50 +55,27 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [setHistory]);
 
-  // Simulate webhook processor loop
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const queue: WebhookEvent[] = JSON.parse(
-        localStorage.getItem("webhook-queue") || "[]",
-      );
-
-      const now = Date.now();
-
-      const remaining: WebhookEvent[] = [];
-
-      queue.forEach((event) => {
-        if (event.executeAt <= now) {
-          const success = Math.random() > 0.2;
-
-          setHistory((prev) =>
-            ExecutionManager.resolveExecution(prev, event.executionId, {
-              status: success ? "success" : "error",
-              result: success
-                ? { message: "Completed successfully" }
-                : { message: "Execution failed" },
-              resolvedAt: Date.now(),
-            }),
-          );
-        } else {
-          remaining.push(event);
-        }
-      });
-
-      localStorage.setItem("webhook-queue", JSON.stringify(remaining));
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, [setHistory]);
-
   // This will later trigger a Make webhook
   async function runAutomation() {
     const executionId = crypto.randomUUID();
 
+    const newExecution: History = {
+      executionId,
+      workflowName,
+      name,
+      email,
+      status: "pending",
+      timestamp: new Date().toISOString(),
+      trigger: "manual",
+    };
+
+    // Insert into Supabase (single source of truth)
     const { error } = await supabase.from("executions").insert({
       execution_id: executionId,
       workflow_name: workflowName,
       email,
       status: "pending",
+      trigger: "manual",
     });
 
     if (error) {
@@ -109,37 +83,21 @@ export default function Home() {
       return;
     }
 
-    // Later: send executionId to Make webhook
+    // Optimistic UI update
+    setHistory((prev) => [newExecution, ...prev]);
+
+    // NEXT STEP: call Make webhook
+    //   await fetch("MAKE_WEBHOOK_URL", {
+    // method: "POST",
+    // headers: { "Content-Type": "application/json" },
+    // body: JSON.stringify({
+    //   executionId,
+    //   email,
+    //   workflowName,
+    //   name,
+    // }),
+    // });
   }
-  // async function runAutomation() {
-  //   const executionId = crypto.randomUUID();
-  //   const timestamp = new Date().toISOString();
-
-  //   const baseExecution: History = {
-  //     executionId,
-  //     name,
-  //     email,
-  //     workflowName,
-  //     timestamp,
-  //     status: "pending",
-  //     trigger: "manual",
-  //   };
-
-  //   // Create execution
-  //   setHistory((prev) => ExecutionManager.createExecution(prev, baseExecution));
-
-  //   // Simulate backend webhook resolution
-  //   simulateWebhook(executionId);
-
-  //   // Timeout protection
-  //   const TIMEOUT_LIMIT = 8000;
-
-  //   setTimeout(() => {
-  //     setHistory((prev) =>
-  //       ExecutionManager.timeoutExecution(prev, executionId),
-  //     );
-  //   }, TIMEOUT_LIMIT);
-  // }
 
   return (
     <main className="min-h-screen flex items-center">
