@@ -86,17 +86,18 @@ export default function Home() {
     // Optimistic UI update
     setHistory((prev) => [newExecution, ...prev]);
 
-    // NEXT STEP: call Make webhook
-    //   await fetch("MAKE_WEBHOOK_URL", {
-    // method: "POST",
-    // headers: { "Content-Type": "application/json" },
-    // body: JSON.stringify({
-    //   executionId,
-    //   email,
-    //   workflowName,
-    //   name,
-    // }),
-    // });
+    // Call Make webhook
+    await fetch("https://hook.us2.make.com/vghpnamt50dz2h9u70ed9byhmo7yii42", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        executionId,
+        email,
+        workflowName,
+      }),
+    });
   }
 
   return (
