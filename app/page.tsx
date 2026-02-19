@@ -73,6 +73,7 @@ export default function Home() {
     const { error } = await supabase.from("executions").insert({
       execution_id: executionId,
       workflow_name: workflowName,
+      name,
       email,
       status: "pending",
       trigger: "manual",

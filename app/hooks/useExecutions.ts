@@ -21,9 +21,14 @@ export function useExecutions<T>(key: string, initialValue: T) {
 
       const mapped = data.map((row) => ({
         executionId: row.execution_id,
+        workflowName: row.workflow_name ?? "Unknown workflow",
+        name: row.name ?? "Unknown",
+        email: row.email ?? "Unknown",
         status: row.status,
         trigger: row.trigger ?? "manual",
         timestamp: row.created_at,
+        result: row.result ?? null,
+        resolvedAt: row.resolved_at ?? null,
       }));
 
       setValue(mapped as unknown as T);
@@ -35,15 +40,6 @@ export function useExecutions<T>(key: string, initialValue: T) {
 
     return () => clearInterval(interval);
   }, []);
-
-  // This will call a Make webhook to start the workflow
-  // The execution history will update ONLY after Make responds
-  // NOTE: Workflow execution updates should occur
-  // after an external system responds (e.g. webhook callback)
-
-  // function triggerWorkflowRun() {
-  //   // TODO: Call Make webhook here
-  // }
 
   // NEXT: support webhook-triggered executions
 
