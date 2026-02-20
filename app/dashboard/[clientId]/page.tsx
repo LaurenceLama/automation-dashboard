@@ -17,7 +17,8 @@ export default function ClientDashboard() {
   const [workflowName, setWorkflowName] = useState("");
 
   const [history, setHistory] = useExecutions<History[]>(
-    `automation-history-${clientId}`,
+    // `automation-history`,
+    clientId,
     [],
   );
 
