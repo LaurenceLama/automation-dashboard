@@ -40,7 +40,7 @@ export function useExecutions<T>(clientId: string, initialValue: T) {
     const interval = setInterval(loadExecutions, 2000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [clientId]);
 
   // NEXT: support webhook-triggered executions
 
