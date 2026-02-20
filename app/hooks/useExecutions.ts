@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
-export function useExecutions<T>(key: string, initialValue: T) {
+export function useExecutions<T>(clientId: string, initialValue: T) {
   const [value, setValue] = useState<T>(initialValue);
 
   // LOAD once on mount
@@ -12,7 +12,7 @@ export function useExecutions<T>(key: string, initialValue: T) {
       const { data, error } = await supabase
         .from("executions")
         .select("*")
-        .eq("client_id", "client_demo")
+        .eq("client_id", clientId)
         .order("created_at", { ascending: false });
 
       if (error) {
