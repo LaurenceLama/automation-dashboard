@@ -12,6 +12,7 @@ export function useExecutions<T>(key: string, initialValue: T) {
       const { data, error } = await supabase
         .from("executions")
         .select("*")
+        .eq("client_id", "client_demo")
         .order("created_at", { ascending: false });
 
       if (error) {

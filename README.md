@@ -118,10 +118,10 @@ Callbacks without a matching executionId are ignored.
 
 ### Next steps (planned)
 
-- Replace mock execution with Make webhook trigger
-- Support webhook callbacks for success/error updates
+- Replace mock execution with Make webhook trigger DONE
+- Support webhook callbacks for success/error updates DONE? 
 - Add execution states (pending → success/error) DONE
-- Optional: role-based or client-safe views
+- Role-based or client-safe views
 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).

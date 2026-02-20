@@ -72,6 +72,7 @@ export default function Home() {
     // Insert into Supabase (single source of truth)
     const { error } = await supabase.from("executions").insert({
       execution_id: executionId,
+      client_id: "client_demo",
       workflow_name: workflowName,
       name,
       email,
