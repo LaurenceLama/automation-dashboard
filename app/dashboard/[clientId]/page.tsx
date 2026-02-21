@@ -17,7 +17,6 @@ export default function ClientDashboard() {
   const [workflowName, setWorkflowName] = useState("");
 
   const [history, setHistory] = useExecutions<History[]>(
-    // `automation-history`,
     clientId,
     [],
   );
@@ -112,7 +111,7 @@ export default function ClientDashboard() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
-                  placeholder="Your name"
+                  placeholder="your name"
                 />
               </div>
 
