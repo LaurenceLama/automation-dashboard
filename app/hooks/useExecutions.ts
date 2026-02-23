@@ -1,18 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { createClient } from "../utils/supabase/client";
 
-export function useExecutions<T>(clientId: string, initialValue: T) {
+export function useExecutions<T>(initialValue: T) {
   const [value, setValue] = useState<T>(initialValue);
+  const supabase = createClient()
 
   // LOAD once on mount
   useEffect(() => {
     const loadExecutions = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) return
+      
       const { data, error } = await supabase
         .from("executions")
         .select("*")
-        .eq("client_id", clientId)
+        .eq("client_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -40,7 +47,7 @@ export function useExecutions<T>(clientId: string, initialValue: T) {
     const interval = setInterval(loadExecutions, 2000);
 
     return () => clearInterval(interval);
-  }, [clientId]);
+  }, [supabase]);
 
   // NEXT: support webhook-triggered executions
 

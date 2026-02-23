@@ -150,7 +150,7 @@ export default function HistoryPanel({ history }: { history: History[] }) {
 
             {item.status === "error" && (
               <h2 className="opacity-50">
-               Error message: {item.errorMessage || "Execution Failed"}
+               Error message: {item.errorMessage}
               </h2>
             )}  
 

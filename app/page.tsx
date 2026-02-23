@@ -6,13 +6,14 @@ import { History } from "./atoms/History";
 import { useExecutions } from "./hooks/useExecutions";
 import { applyExecutionTimeouts } from "./lib/timeout";
 import { supabase } from "./lib/supabase";
+import { redirect } from "next/navigation";
 
 export default function Home() {
+  redirect("/dashboard")
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [workflowName, setWorkflowName] = useState("");
   const [history, setHistory] = useExecutions<History[]>(
-    "automation-history",
     [],
   );
 
@@ -185,7 +186,7 @@ export default function Home() {
 
               {latestExecution?.status === "error" && (
                 <p className="rounded-lg p-4 border border-red-400 text-red-600">
-                  {latestExecution.errorMessage || "Execution failed."}
+                  {latestExecution?.errorMessage || "Execution failed."}
                 </p>
               )}
             </div>
