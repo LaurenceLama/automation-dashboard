@@ -87,8 +87,8 @@ export default function DashboardClient({ user }: {user: User}) {
   }
 
   return (
-    <main className="min-h-screen flex items-center">
-          <div className="mx-auto max-w-5xl xl:flex p-10 xl:p-6">
+    <main className="min-h-screen flex justify-center">
+          <div className="max-w-5xl p-10 xl:flex xl:py-12">
             <div className="xl:w-1/2">
               <h1 className="text-2xl pb-4">Client Dashboard: {user.email}</h1>
     

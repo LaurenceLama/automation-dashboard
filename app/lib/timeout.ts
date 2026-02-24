@@ -1,6 +1,6 @@
 import { History } from "../atoms/History";
 
-const TIMEOUT_MINUTES = 10;
+const TIMEOUT_MINUTES = 5;
 
 export function applyExecutionTimeouts(executions: History[]): History[] {
   const now = Date.now();
