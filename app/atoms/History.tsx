@@ -1,4 +1,4 @@
-export type TriggerType = "manual" | "webhook" | "completion";
+export type TriggerType = "scheduled" | "webhook" | "completion";
 
 export type ExecutionStatus = "pending" | "success" | "error";
 

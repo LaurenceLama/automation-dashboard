@@ -33,10 +33,11 @@ export function useExecutions<T>(initialValue: T) {
         name: row.name ?? "Unknown",
         email: row.email ?? "Unknown",
         status: row.status,
-        trigger: row.trigger ?? "manual",
+        trigger: row.trigger ?? "webhook",
         timestamp: row.created_at,
         result: row.result ?? null,
         resolvedAt: row.resolved_at ?? null,
+        errorMessage: row.error_message ?? null,
       }));
 
       setValue(mapped as unknown as T);

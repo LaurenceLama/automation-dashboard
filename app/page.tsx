@@ -67,7 +67,7 @@ export default function Home() {
       email,
       status: "pending",
       timestamp: new Date().toISOString(),
-      trigger: "manual",
+      trigger: "webhook",
     };
 
     // Insert into Supabase (single source of truth)
@@ -78,7 +78,7 @@ export default function Home() {
       name,
       email,
       status: "pending",
-      trigger: "manual",
+      trigger: "webhook",
     });
 
     if (error) {

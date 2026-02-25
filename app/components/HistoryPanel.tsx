@@ -144,13 +144,13 @@ export default function HistoryPanel({ history }: { history: History[] }) {
 
             <h2>Email: {item.email}</h2>
             
-            <h2>Triggered source: {item.trigger.toUpperCase()}</h2> {/* 'manual' - for demo purposes btw */}
+            <h2>Triggered source: {item.trigger.toUpperCase()}</h2>
             
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
 
             {item.status === "error" && (
               <h2 className="opacity-50">
-               Error message: {item.errorMessage}
+               Error message: {item.errorMessage || "Execution failed. Check database or your workflow."}
               </h2>
             )}  
 

@@ -52,7 +52,7 @@ export default function DashboardClient({ user }: {user: User}) {
       email,
       status: "pending",
       timestamp: new Date().toISOString(),
-      trigger: "manual",
+      trigger: "webhook",
     };
 
     const { error } = await supabase.from("executions").insert({
@@ -62,7 +62,7 @@ export default function DashboardClient({ user }: {user: User}) {
       name,
       email,
       status: "pending",
-      trigger: "manual",
+      trigger: "webhook",
     });
 
     if (error) {
