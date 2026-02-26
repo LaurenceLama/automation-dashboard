@@ -5,22 +5,38 @@ import { createClient } from "../utils/supabase/client";
 
 export function useExecutions<T>(initialValue: T) {
   const [value, setValue] = useState<T>(initialValue);
-  const supabase = createClient()
+  const supabase = createClient();
 
   // LOAD once on mount
   useEffect(() => {
     const loadExecutions = async () => {
       const {
         data: { user },
-      } = await supabase.auth.getUser()
+      } = await supabase.auth.getUser();
 
-      if (!user) return
-      
-      const { data, error } = await supabase
+      if (!user) return;
+
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+
+      const { data: adminCheck } = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      const isAdmin = !!adminCheck;
+
+      let query = supabase
         .from("executions")
         .select("*")
-        .eq("client_id", user.id)
         .order("created_at", { ascending: false });
+
+      if (!isAdmin) {
+        query = query.eq("client_id", userId);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error("Supabase load error:", error);
