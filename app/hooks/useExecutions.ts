@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "../utils/supabase/client";
+import { Execution } from "../atoms/History";
 
-export function useExecutions<T>(initialValue: T) {
-  const [value, setValue] = useState<T>(initialValue);
+export function useExecutions(initialValue: Execution[]) {
+  const [value, setValue] = useState<Execution[]>(initialValue);
   const supabase = createClient();
 
   // LOAD once on mount
@@ -56,7 +57,7 @@ export function useExecutions<T>(initialValue: T) {
         errorMessage: row.error_message ?? null,
       }));
 
-      setValue(mapped as unknown as T);
+      setValue(mapped as unknown as Execution[]);
     };
 
     loadExecutions();
@@ -66,7 +67,76 @@ export function useExecutions<T>(initialValue: T) {
     return () => clearInterval(interval);
   }, [supabase]);
 
-  // NEXT: support webhook-triggered executions
+  async function triggerExecution({
+    workflowName,
+    name,
+    email,
+  }: {
+    workflowName: string;
+    name: string;
+    email: string;
+  }) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  return [value, setValue] as const;
+    if (!user) return;
+
+    const executionId = crypto.randomUUID();
+
+    // 1️⃣ Insert pending execution
+    const { error } = await supabase.from("executions").insert({
+      execution_id: executionId,
+      client_id: user.id,
+      workflow_name: workflowName,
+      name,
+      email,
+      status: "pending",
+      trigger: "manual",
+    });
+
+    if (error) {
+      console.error("Insert failed:", error);
+      return;
+    }
+
+    // 2️⃣ Optimistic UI update (instant feedback)
+    setValue((prev: Execution[]) => [
+      {
+        executionId,
+        workflowName,
+        name,
+        email,
+        status: "pending",
+        trigger: "manual",
+        timestamp: new Date().toISOString(),
+        result: null,
+        resolvedAt: null,
+        errorMessage: null,
+      },
+      ...prev,
+    ]);
+
+    // 3️⃣ Call Make webhook
+    await fetch("https://hook.us2.make.com/vghpnamt50dz2h9u70ed9byhmo7yii42", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        executionId,
+        workflowName,
+        name,
+        email,
+        clientId: user.id,
+      }),
+    });
+  }
+
+  return {
+    executions: value,
+    setExecutions: setValue,
+    triggerExecution,
+  } as const;
+  // return [value, setValue] as const;
 }

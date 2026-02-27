@@ -1,11 +1,11 @@
 "use client";
 
-import { History } from "../atoms/History";
+import { Execution } from "../atoms/History";
 import { useState, useEffect } from "react";
 
 type Filter = "all" | "success" | "error";
 
-export default function HistoryPanel({ history }: { history: History[] }) {
+export default function HistoryPanel({ history }: { history: Execution[] }) {
   const [filter, setFilter] = useState<Filter>("all");
 
   const filteredHistory = history.filter((item) => {

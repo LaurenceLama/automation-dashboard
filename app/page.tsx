@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import HistoryPanel from "./components/HistoryPanel";
-import { History } from "./atoms/History";
 import { useExecutions } from "./hooks/useExecutions";
 import { applyExecutionTimeouts } from "./lib/timeout";
 import { supabase } from "./lib/supabase";
@@ -16,6 +15,7 @@ export default function Home() {
   const [history, setHistory] = useExecutions<History[]>(
     [],
   );
+
 
   // Derived loading state
   const loading = history.some((h) => h.status === "pending");
