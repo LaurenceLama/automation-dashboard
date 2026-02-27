@@ -1,6 +1,6 @@
-import { History } from "../atoms/History";
+import { Execution } from "../atoms/History";
 
-export function getLatestExecution(history: History[]): History | undefined {
+export function getLatestExecution(history: Execution[]): Execution | undefined {
   return [...history].sort(
     (a, b) =>
       new Date(b.timestamp).getTime() -
@@ -8,22 +8,22 @@ export function getLatestExecution(history: History[]): History | undefined {
   )[0];
 }
 
-export function isLoading(history: History[]): boolean {
+export function isLoading(history: Execution[]): boolean {
   return history.some(h => h.status === "pending");
 }
 
 export function addExecution(
-  history: History[],
-  execution: History
-): History[] {
+  history: Execution[],
+  execution: Execution
+): Execution[] {
   return [...history, execution];
 }
 
 export function updateExecutionStatus(
-  history: History[],
+  history: Execution[],
   id: string,
-  status: History["status"]
-): History[] {
+  status: Execution["status"]
+): Execution[] {
   return history.map(e =>
     e.executionId === id ? { ...e, status } : e
   );
