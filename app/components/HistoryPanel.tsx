@@ -155,7 +155,7 @@ export default function HistoryPanel({ history }: { history: Execution[] }) {
                 </h2>
                 
                 <h2 className="opacity-50">
-                 Error type: {item.errorType || "null"}
+                 Error type: {item.errorType?.toUpperCase() || "null"}
                 </h2>
               </>
             )}  

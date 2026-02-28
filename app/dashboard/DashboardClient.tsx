@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react";
 import HistoryPanel from "../components/HistoryPanel";
-// import { Execution } from "../atoms/History";
 import { useExecutions } from "../hooks/useExecutions";
-// import { applyExecutionTimeouts } from "../lib/timeout";
 import { createClient } from "../utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { resolveExecutionTimeouts } from "../lib/timeoutResolver";
 
 type Workflow = {
   id: string;
@@ -25,7 +24,6 @@ export default function DashboardClient({ user }: { user: User }) {
 
   const {
     executions: history,
-    // setExecutions: setHistory,
     triggerExecution,
   } = useExecutions([]);
 
@@ -39,19 +37,14 @@ export default function DashboardClient({ user }: { user: User }) {
         )[0]
       : null;
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setHistory((prev: Execution[]) => {
-  //       const recovered = applyExecutionTimeouts(prev);
-  //       if (JSON.stringify(prev) !== JSON.stringify(recovered)) {
-  //         return recovered;
-  //       }
-  //       return prev;
-  //     });
-  //   }, 1000);
-
-  //   return () => clearInterval(interval);
-  // }, [setHistory]);
+  // Timeout watchdog
+  useEffect(() => {
+    const interval = setInterval(() => {
+      resolveExecutionTimeouts(history);
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, [history]);
 
   // Fetch workflows on mount
   useEffect(() => {
@@ -118,18 +111,6 @@ export default function DashboardClient({ user }: { user: User }) {
                 />
               </div>
 
-              {/* <div className=" mt-4">
-                <h2>Workflow name</h2>
-                <input
-                  required
-                  type="text"
-                  value={workflowName}
-                  onChange={(e) => setWorkflowName(e.target.value)}
-                  className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
-                  placeholder="e.g. Lead intake → CRM"
-                />
-              </div> */}
-
               <div className="mt-4 space-y-2">
                 <h2>Select Workflow</h2>
 
@@ -145,7 +126,6 @@ export default function DashboardClient({ user }: { user: User }) {
                     </option>
                   ))}
                 </select>
-
               </div>
 
               <button

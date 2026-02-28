@@ -3,32 +3,33 @@ import { Execution } from "../atoms/History";
 
 const TIMEOUT_MINUTES = 5;
 
-export async function resolveExecutionTimeouts(
-  executions: Execution[]
-) {
+export async function resolveExecutionTimeouts(executions: Execution[]) {
   const supabase = createClient();
   const now = Date.now();
 
-  for (const execution of executions) {
-    if (execution.status !== "pending") continue;
+  const timedOut = executions.filter((execution) => {
+    if (execution.status !== "pending") return false;
 
     const createdAt = new Date(execution.timestamp).getTime();
     const minutesElapsed = (now - createdAt) / 1000 / 60;
 
-    if (minutesElapsed <= TIMEOUT_MINUTES) continue;
+    return minutesElapsed > TIMEOUT_MINUTES;
+  });
 
-    console.log("Timeout detected:", execution.executionId);
+  if (!timedOut.length) return;
 
-    // Persist timeout
-    await supabase
-      .from("executions")
-      .update({
-        status: "error",
-        error_type: "timeout",
-        error_message:
-          "Execution timed out. No response received from automation platform.",
-        resolved_at: new Date().toISOString(),
-      })
-      .eq("execution_id", execution.executionId);
-  }
+  await Promise.all(
+    timedOut.map((execution) =>
+      supabase
+        .from("executions")
+        .update({
+          status: "error",
+          error_type: "timeout",
+          error_message:
+            "Execution timed out. No response received from automation platform.",
+          resolved_at: new Date().toISOString(),
+        })
+        .eq("execution_id", execution.executionId)
+    )
+  );
 }
