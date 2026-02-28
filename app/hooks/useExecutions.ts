@@ -124,7 +124,7 @@ export function useExecutions(initialValue: Execution[]) {
 
     // Call Make webhook
     await fetch(
-      `https://hook.us2.make.com/${process.env.NEXT_PUBLIC_EXECUTION_WEBHOOK_URL_AFTER_DOT_COM!}`,
+      `https://hook.us2.make.com/${process.env.NEXT_PUBLIC_EXECUTION_WEBHOOK_URL_AFTER_DOT_COM}`,
       {
         method: "POST",
         headers: {
