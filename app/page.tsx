@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import HistoryPanel from "./components/HistoryPanel";
 import { useExecutions } from "./hooks/useExecutions";
-import { applyExecutionTimeouts } from "./lib/timeout";
+// import { applyExecutionTimeouts } from "./lib/timeout";
 import { supabase } from "./lib/supabase";
 import { redirect } from "next/navigation";
+// import { History } from "./atoms/History";
 
 export default function Home() {
   redirect("/dashboard")

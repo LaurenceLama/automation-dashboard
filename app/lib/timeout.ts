@@ -1,26 +1,28 @@
-import { History } from "../atoms/History";
+// import { Execution } from "../atoms/History";
 
-const TIMEOUT_MINUTES = 5;
+// const TIMEOUT_MINUTES = 5;
 
-export function applyExecutionTimeouts(executions: History[]): History[] {
-  const now = Date.now();
+// export function applyExecutionTimeouts(executions: Execution[]): Execution[] {
+//   const now = Date.now();
 
-  return executions.map((execution) => {
-    if (execution.status !== "pending") return execution;
+//   return executions.map((execution) => {
+//     if (execution.status !== "pending") return execution;
 
-    const createdAt = new Date(execution.timestamp).getTime();
-    const minutesElapsed = (now - createdAt) / 1000 / 60;
+//     const createdAt = new Date(execution.timestamp).getTime();
+//     const minutesElapsed = (now - createdAt) / 1000 / 60;
 
-    // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
-    if (minutesElapsed > TIMEOUT_MINUTES) {
-      return {
-        ...execution,
-        status: "error" as const,
-        errorType: "timeout" as const,
-        errorMessage: "Execution timed out. No response received from automation platform.",
-      };
-    }
+//     // In case pending takes too long, set to timeout - If a callback is not received within a defined window, the execution is treated as failed.
+//     if (minutesElapsed > TIMEOUT_MINUTES) {
+//       return {
+//         ...execution,
+//         status: "error" as const,
+//         errorType: "timeout" as const,
+//         errorMessage: "Execution timed out. No response received from automation platform.",
+//       };
+//     }
 
-    return execution;
-  });
-}
+//     // need a function to persist timeout error in supabase if timeout error occurs.
+
+//     return execution;
+//   });
+// }

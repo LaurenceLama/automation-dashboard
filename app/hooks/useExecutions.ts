@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "../utils/supabase/client";
 import { Execution } from "../atoms/History";
+import { resolveExecutionTimeouts } from "../lib/timeoutResolver";
 
 export function useExecutions(initialValue: Execution[]) {
   const [value, setValue] = useState<Execution[]>(initialValue);
@@ -44,6 +45,8 @@ export function useExecutions(initialValue: Execution[]) {
         return;
       }
 
+      await resolveExecutionTimeouts(data);
+
       const mapped = data.map((row) => ({
         executionId: row.execution_id,
         workflowName: row.workflow_name ?? "Unknown workflow",
@@ -55,9 +58,11 @@ export function useExecutions(initialValue: Execution[]) {
         result: row.result ?? null,
         resolvedAt: row.resolved_at ?? null,
         errorMessage: row.error_message ?? null,
+        errorType: row.error_type ?? null,
       }));
 
-      setValue(mapped as unknown as Execution[]);
+      // setValue(mapped as unknown as Execution[]);
+      setValue(mapped);
     };
 
     loadExecutions();
@@ -84,7 +89,7 @@ export function useExecutions(initialValue: Execution[]) {
 
     const executionId = crypto.randomUUID();
 
-    // 1️⃣ Insert pending execution
+    // Insert pending execution
     const { error } = await supabase.from("executions").insert({
       execution_id: executionId,
       client_id: user.id,
@@ -100,7 +105,7 @@ export function useExecutions(initialValue: Execution[]) {
       return;
     }
 
-    // 2️⃣ Optimistic UI update (instant feedback)
+    // Optimistic UI update (instant feedback)
     setValue((prev: Execution[]) => [
       {
         executionId,
@@ -117,20 +122,23 @@ export function useExecutions(initialValue: Execution[]) {
       ...prev,
     ]);
 
-    // 3️⃣ Call Make webhook
-    await fetch("https://hook.us2.make.com/vghpnamt50dz2h9u70ed9byhmo7yii42", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    // Call Make webhook
+    await fetch(
+      `https://hook.us2.make.com/${process.env.NEXT_PUBLIC_EXECUTION_WEBHOOK_URL_AFTER_DOT_COM!}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          executionId,
+          workflowName,
+          name,
+          email,
+          clientId: user.id,
+        }),
       },
-      body: JSON.stringify({
-        executionId,
-        workflowName,
-        name,
-        email,
-        clientId: user.id,
-      }),
-    });
+    );
   }
 
   return {

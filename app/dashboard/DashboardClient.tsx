@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import HistoryPanel from "../components/HistoryPanel";
-import { Execution } from "../atoms/History";
+// import { Execution } from "../atoms/History";
 import { useExecutions } from "../hooks/useExecutions";
-import { applyExecutionTimeouts } from "../lib/timeout";
+// import { applyExecutionTimeouts } from "../lib/timeout";
 import { createClient } from "../utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
@@ -25,7 +25,7 @@ export default function DashboardClient({ user }: { user: User }) {
 
   const {
     executions: history,
-    setExecutions: setHistory,
+    // setExecutions: setHistory,
     triggerExecution,
   } = useExecutions([]);
 
@@ -39,19 +39,19 @@ export default function DashboardClient({ user }: { user: User }) {
         )[0]
       : null;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHistory((prev: Execution[]) => {
-        const recovered = applyExecutionTimeouts(prev);
-        if (JSON.stringify(prev) !== JSON.stringify(recovered)) {
-          return recovered;
-        }
-        return prev;
-      });
-    }, 1000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setHistory((prev: Execution[]) => {
+  //       const recovered = applyExecutionTimeouts(prev);
+  //       if (JSON.stringify(prev) !== JSON.stringify(recovered)) {
+  //         return recovered;
+  //       }
+  //       return prev;
+  //     });
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, [setHistory]);
+  //   return () => clearInterval(interval);
+  // }, [setHistory]);
 
   // Fetch workflows on mount
   useEffect(() => {
@@ -70,48 +70,6 @@ export default function DashboardClient({ user }: { user: User }) {
   }, [supabase]);
 
   async function runAutomation() {
-    const executionId = crypto.randomUUID();
-
-    const newExecution: Execution = {
-      executionId,
-      workflowName: selectedWorkflow,
-      name,
-      email,
-      status: "pending",
-      timestamp: new Date().toISOString(),
-      trigger: "webhook",
-    };
-
-    const { error } = await supabase.from("executions").insert({
-      execution_id: executionId,
-      client_id: user.id,
-      workflow_name: workflows,
-      name,
-      email,
-      status: "pending",
-      trigger: "webhook",
-    });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setHistory((prev) => [newExecution, ...prev]);
-
-    await fetch("https://hook.us2.make.com/vghpnamt50dz2h9u70ed9byhmo7yii42", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        executionId,
-        email,
-        // workflowName,
-        clientId: user.id,
-      }),
-    });
-
     await triggerExecution({
       workflowName: selectedWorkflow,
       name,

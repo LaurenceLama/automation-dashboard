@@ -149,9 +149,15 @@ export default function HistoryPanel({ history }: { history: Execution[] }) {
             <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
 
             {item.status === "error" && (
-              <h2 className="opacity-50">
-               Error message: {item.errorMessage || "Execution failed. Check database or your workflow."}
-              </h2>
+              <>
+                <h2 className="opacity-50">
+                 Error message: {item.errorMessage || "Execution failed. Check database or your workflow."}
+                </h2>
+                
+                <h2 className="opacity-50">
+                 Error type: {item.errorType || "null"}
+                </h2>
+              </>
             )}  
 
           </div>
