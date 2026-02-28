@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import HistoryPanel from "./components/HistoryPanel";
-import { useExecutions } from "./hooks/useExecutions";
+import { useState } from "react";
+// import HistoryPanel from "./components/HistoryPanel";
+// import { useExecutions } from "./hooks/useExecutions";
 // import { applyExecutionTimeouts } from "./lib/timeout";
 import { supabase } from "./lib/supabase";
 import { redirect } from "next/navigation";
+// import { Execution } from "./atoms/History";
 // import { History } from "./atoms/History";
 
 export default function Home() {
@@ -13,22 +14,20 @@ export default function Home() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [workflowName, setWorkflowName] = useState("");
-  const [history, setHistory] = useExecutions<History[]>(
-    [],
-  );
+  // const [history, setHistory] = useExecutions<Execution[]>([]);
 
 
   // Derived loading state
-  const loading = history.some((h) => h.status === "pending");
+  // const loading = history.some((h: Execution) => h.status === "pending");
 
   // Show latest execution first
-  const latestExecution =
-    history.length > 0
-      ? [...history].sort(
-          (a, b) =>
-            new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-        )[0]
-      : null;
+  // const latestExecution =
+  //   history.length > 0
+  //     ? [...history].sort(
+  //         (a, b) =>
+  //           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  //       )[0]
+  //     : null;
 
   // Execution Recovery Loop
   // ------------------------------------------------
@@ -41,35 +40,35 @@ export default function Home() {
   //
   // In production, this acts as a client-side fallback.
   // The primary state resolution should come from webhook callbacks or server updates.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHistory((prev) => {
-        const recovered = applyExecutionTimeouts(prev);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setHistory((prev) => {
+  //       const recovered = applyExecutionTimeouts(prev);
 
-        if (JSON.stringify(prev) !== JSON.stringify(recovered)) {
-          return recovered;
-        }
+  //       if (JSON.stringify(prev) !== JSON.stringify(recovered)) {
+  //         return recovered;
+  //       }
 
-        return prev;
-      });
-    }, 1000);
+  //       return prev;
+  //     });
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, [setHistory]);
+  //   return () => clearInterval(interval);
+  // }, [setHistory]);
 
   // This will later trigger a Make webhook
   async function runAutomation() {
     const executionId = crypto.randomUUID();
 
-    const newExecution: History = {
-      executionId,
-      workflowName,
-      name,
-      email,
-      status: "pending",
-      timestamp: new Date().toISOString(),
-      trigger: "webhook",
-    };
+    // const newExecution: Execution = {
+    //   executionId,
+    //   workflowName,
+    //   name,
+    //   email,
+    //   status: "pending",
+    //   timestamp: new Date().toISOString(),
+    //   trigger: "webhook",
+    // };
 
     // Insert into Supabase (single source of truth)
     const { error } = await supabase.from("executions").insert({
@@ -88,7 +87,7 @@ export default function Home() {
     }
 
     // Optimistic UI update
-    setHistory((prev) => [newExecution, ...prev]);
+    // setHistory((prev: Execution[]) => [newExecution, ...prev]);
 
     // Call Make webhook
     await fetch("https://hook.us2.make.com/vghpnamt50dz2h9u70ed9byhmo7yii42", {
@@ -160,19 +159,19 @@ export default function Home() {
                 />
               </div>
 
-              <button
+              {/* <button
                 type="submit"
                 disabled={loading}
                 className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
               >
                 {loading ? "Running..." : "Simulate execution (dev)"}
-              </button>
+              </button> */}
             </form>
           </div>
 
           <div className="mt-4">
             <strong>Result</strong>
-            <div className="mt-2 p-4 max-w-max">
+            {/* <div className="mt-2 p-4 max-w-max">
               {!latestExecution && (
                 <p className="opacity-50">No execution yet.</p>
               )}
@@ -190,13 +189,13 @@ export default function Home() {
                   {latestExecution?.errorMessage || "Execution failed."}
                 </p>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
 
         <hr className="xl:mr-20 my-6" />
 
-        <div className="xl:w-1/2">
+        {/* <div className="xl:w-1/2">
           <HistoryPanel history={history} />
           <button
             onClick={() => setHistory([])}
@@ -204,7 +203,7 @@ export default function Home() {
           >
             Clear history (dev)
           </button>
-        </div>
+        </div> */}
       </div>
     </main>
   );
