@@ -7,10 +7,12 @@ import { createClient } from "../utils/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { resolveExecutionTimeouts } from "../lib/timeoutResolver";
+import Link from "next/link";
 
 type Workflow = {
   id: string;
   name: string;
+  webhook_path: string;
 };
 
 export default function DashboardClient({ user }: { user: User }) {
@@ -22,10 +24,7 @@ export default function DashboardClient({ user }: { user: User }) {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [selectedWorkflow, setSelectedWorkflow] = useState<string>("");
 
-  const {
-    executions: history,
-    triggerExecution,
-  } = useExecutions([]);
+  const { executions: history, triggerExecution } = useExecutions([]);
 
   const loading = history.some((h) => h.status === "pending");
 
@@ -42,7 +41,7 @@ export default function DashboardClient({ user }: { user: User }) {
     const interval = setInterval(() => {
       resolveExecutionTimeouts(history);
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, [history]);
 
@@ -51,7 +50,7 @@ export default function DashboardClient({ user }: { user: User }) {
     const fetchWorkflows = async () => {
       const { data, error } = await supabase
         .from("workflows")
-        .select("id, name")
+        .select("id, name, webhook_path")
         .order("created_at", { ascending: true });
 
       if (!error) {
@@ -63,8 +62,17 @@ export default function DashboardClient({ user }: { user: User }) {
   }, [supabase]);
 
   async function runAutomation() {
+    const workflow = workflows.find((wf) => wf.id === selectedWorkflow);
+
+    if (!workflow) {
+      console.warn("No workflow selected");
+      return;
+    }
+
     await triggerExecution({
-      workflowName: selectedWorkflow,
+      workflowId: workflow.id,
+      workflowKey: workflow.webhook_path,
+      workflowName: workflow.name,
       name,
       email,
     });
@@ -77,7 +85,7 @@ export default function DashboardClient({ user }: { user: User }) {
   return (
     <main className="min-h-screen flex justify-center">
       <div className="max-w-5xl p-10 xl:flex xl:py-12">
-        <div className="xl:w-1/2">
+        <section className="xl:w-1/2">
           <h1 className="text-2xl pb-4">Client Dashboard: {user.email}</h1>
 
           <div className="border rounded-xl min-w-fit p-6 mb-10">
@@ -111,26 +119,46 @@ export default function DashboardClient({ user }: { user: User }) {
                 />
               </div>
 
-              <div className="mt-4 space-y-2">
+              <div className="mt-4 space-y-2 space-x-12">
                 <h2>Select Workflow</h2>
-
-                <select
-                  value={selectedWorkflow}
-                  onChange={(e) => setSelectedWorkflow(e.target.value)}
-                  className="p-1 border rounded-md"
-                >
-                  <option value="">Select a workflow</option>
-                  {workflows.map((wf) => (
-                    <option key={wf.id} value={wf.id}>
-                      {wf.name}
-                    </option>
-                  ))}
-                </select>
+                {!workflows.length ? (
+                  <div className="flex space-x-2">
+                    <h2 className="p-1.5">No workflows yet.</h2>
+                    <Link
+                      href="/dashboard/workflows/new"
+                      className="p-1.5 border rounded-md hover:opacity-60"
+                    >
+                      Add your first workflow
+                    </Link>
+                  </div>
+                ) : (
+                  <select
+                    value={selectedWorkflow}
+                    onChange={(e) => setSelectedWorkflow(e.target.value)}
+                    className="p-1 border rounded-md hover:opacity-60"
+                  >
+                    <option value="" className="bg-background">Select a workflow</option>
+                    {workflows.map((wf) => (
+                      <option key={wf.id} value={wf.id} className="bg-background">
+                        {wf.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {workflows.length > 0 && (
+                  <Link
+                    href="/dashboard/workflows/new"
+                    className="p-1.5 border rounded-md hover:opacity-60"
+                  >
+                    Add workflow
+                  </Link>
+                )}
               </div>
 
+              {/* needs to only show for admin */}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading && !selectedWorkflow}
                 className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
               >
                 {loading ? "Running..." : "Run automation"}
@@ -168,13 +196,13 @@ export default function DashboardClient({ user }: { user: User }) {
           >
             Logout
           </button>
-        </div>
+        </section>
 
         <hr className="xl:mr-20 my-6" />
 
-        <div className="xl:w-1/2">
+        <section className="xl:w-1/2">
           <HistoryPanel history={history} />
-        </div>
+        </section>
       </div>
     </main>
   );

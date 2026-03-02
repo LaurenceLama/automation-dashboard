@@ -73,10 +73,14 @@ export function useExecutions(initialValue: Execution[]) {
   }, [supabase]);
 
   async function triggerExecution({
+    workflowId,
+    workflowKey,
     workflowName,
     name,
     email,
   }: {
+    workflowId: string;
+    workflowKey: string;
     workflowName: string;
     name: string;
     email: string;
@@ -132,7 +136,7 @@ export function useExecutions(initialValue: Execution[]) {
         },
         body: JSON.stringify({
           executionId,
-          workflowName,
+          workflowKey,
           name,
           email,
           clientId: user.id,

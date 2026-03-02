@@ -12,6 +12,8 @@ export type ErrorType =
 export interface Execution {
   executionId: string;
   workflowName: string;
+  // webhook_path: string;
+
   name: string;
   email: string;
 
@@ -27,21 +29,3 @@ export interface Execution {
   errorType?: ErrorType | null;
 
 }
-
-// export interface History {
-//   executionId: string;
-//   workflowName: string;
-//   name: string;
-//   email: string;
-
-//   status: ExecutionStatus;
-//   trigger: TriggerType;
-
-//   timestamp: string;
-
-//   result?: {message?: string;} | null;
-
-//   resolvedAt?: string | null;
-
-//   errorMessage?: string | null;
-// }

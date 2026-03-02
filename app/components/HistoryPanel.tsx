@@ -123,7 +123,7 @@ export default function HistoryPanel({ history }: { history: Execution[] }) {
               </div>
             )}
             <h2
-              className={`inline-block px-2 py-1 rounded ${
+              className={`inline-block px-2 py-1 font-bold rounded ${
                 item.status === "pending"
                   ? "bg-yellow-400 text-yellow-900"
                   : item.status === "success"
