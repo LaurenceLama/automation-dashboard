@@ -8,6 +8,7 @@ import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import { resolveExecutionTimeouts } from "../lib/timeoutResolver";
 import Link from "next/link";
+import { useAdmin } from "../hooks/useAdmin";
 
 type Workflow = {
   id: string;
@@ -27,6 +28,10 @@ export default function DashboardClient({ user }: { user: User }) {
   const { executions: history, triggerExecution } = useExecutions([]);
 
   const loading = history.some((h) => h.status === "pending");
+
+  const [showFirstSuccess, setShowFirstSuccess] = useState(false);
+
+  const isAdmin = useAdmin();
 
   const latestExecution =
     history.length > 0
@@ -61,6 +66,27 @@ export default function DashboardClient({ user }: { user: User }) {
     fetchWorkflows();
   }, [supabase]);
 
+  // Persist success banner & dismiss once seen
+  useEffect(() => {
+    if (!history.length) return;
+
+    const successCount = history.filter((e) => e.status === "success").length;
+
+    queueMicrotask(() => {
+      if (successCount === 1) {
+        setShowFirstSuccess(true);
+      }
+    });
+
+    localStorage.setItem("seenFirstSuccess", "true");
+
+    const seen = localStorage.getItem("seenFirstSuccess");
+
+    queueMicrotask(() => {
+      if (seen) setShowFirstSuccess(false);
+    });
+  }, [history]);
+
   async function runAutomation() {
     const workflow = workflows.find((wf) => wf.id === selectedWorkflow);
 
@@ -88,6 +114,25 @@ export default function DashboardClient({ user }: { user: User }) {
         <section className="xl:w-1/2">
           <h1 className="text-2xl pb-4">Client Dashboard: {user.email}</h1>
 
+          {showFirstSuccess && (
+            <div className="p-4 mb-4 border rounded-md bg-emerald-900/40">
+              <h3 className="font-semibold">
+                🎉 Automation Connected Successfully!
+              </h3>
+
+              <p className="text-sm opacity-80">
+                Your workflow is now sending live executions to your dashboard.
+              </p>
+
+              <button
+                onClick={() => setShowFirstSuccess(false)}
+                className="mt-2 text-sm underline cursor-pointer hover:opacity-70"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
           <div className="border rounded-xl min-w-fit p-6 mb-10">
             <form
               onSubmit={(e) => {
@@ -95,56 +140,68 @@ export default function DashboardClient({ user }: { user: User }) {
                 runAutomation();
               }}
             >
-              <div className="">
-                <h2>Name</h2>
-                <input
-                  required
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
-                  placeholder="your name"
-                />
-              </div>
-
-              <div className=" mt-4">
-                <h2>Email</h2>
-                <input
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
-                  placeholder="you@example.com"
-                />
-              </div>
-
-              <div className="mt-4 space-y-2 space-x-12">
-                <h2>Select Workflow</h2>
-                {!workflows.length ? (
-                  <div className="flex space-x-2">
-                    <h2 className="p-1.5">No workflows yet.</h2>
-                    <Link
-                      href="/dashboard/workflows/new"
-                      className="p-1.5 border rounded-md hover:opacity-60"
-                    >
-                      Add your first workflow
-                    </Link>
+              {isAdmin && (
+                <>
+                  <div className="">
+                    <h2>Name</h2>
+                    <input
+                      required
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
+                      placeholder="your name"
+                    />
                   </div>
+
+                  <div className=" mt-4">
+                    <h2>Email</h2>
+                    <input
+                      required
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="border border-amber-100 rounded-md py-1 w-3/4 text-emerald-50 mt-1 pl-1 (xl:pr-[40%] sm:pr-[30%])"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                </>
+              )}
+              <h2 className={`${!isAdmin && 'text-center mb-4'}  my-2`}>Your Workflows</h2>
+              <div className={`${isAdmin && "justify-between"} flex justify-around`}>
+                {!workflows.length ? (
+                  <>
+                    <div className="flex space-x-2">
+                      <h2 className="p-1.5">No workflows yet.</h2>
+                      <Link
+                        href="/dashboard/workflows/new"
+                        className="p-1.5 border rounded-md hover:opacity-60"
+                      >
+                        Add your first workflow
+                      </Link>
+                    </div>
+                  </>
                 ) : (
                   <select
                     value={selectedWorkflow}
                     onChange={(e) => setSelectedWorkflow(e.target.value)}
                     className="p-1 border rounded-md hover:opacity-60"
                   >
-                    <option value="" className="bg-background">Select a workflow</option>
+                    <option value="" className="bg-background">
+                      Select a workflow
+                    </option>
                     {workflows.map((wf) => (
-                      <option key={wf.id} value={wf.id} className="bg-background">
+                      <option
+                        key={wf.id}
+                        value={wf.id}
+                        className="bg-background"
+                      >
                         {wf.name}
                       </option>
                     ))}
                   </select>
                 )}
+
                 {workflows.length > 0 && (
                   <Link
                     href="/dashboard/workflows/new"
@@ -155,14 +212,15 @@ export default function DashboardClient({ user }: { user: User }) {
                 )}
               </div>
 
-              {/* needs to only show for admin */}
-              <button
-                type="submit"
-                disabled={loading && !selectedWorkflow}
-                className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
-              >
-                {loading ? "Running..." : "Run automation"}
-              </button>
+              {isAdmin && (
+                <button
+                  type="submit"
+                  disabled={loading && !selectedWorkflow}
+                  className="mt-6 p-2 bg-amber-100 hover:bg-amber-400 cursor-pointer rounded-lg text-neutral-800 font-medium"
+                >
+                  {loading ? "Running..." : "Run automation"}
+                </button>
+              )}
             </form>
           </div>
 

@@ -1,7 +1,7 @@
 import { createClient } from "../utils/supabase/client";
 import { Execution } from "../atoms/History";
 
-const TIMEOUT_MINUTES = 5;
+const TIMEOUT_MINUTES = 10;
 
 export async function resolveExecutionTimeouts(executions: Execution[]) {
   const supabase = createClient();

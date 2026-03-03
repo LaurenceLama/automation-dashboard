@@ -61,7 +61,6 @@ export function useExecutions(initialValue: Execution[]) {
         errorType: row.error_type ?? null,
       }));
 
-      // setValue(mapped as unknown as Execution[]);
       setValue(mapped);
     };
 

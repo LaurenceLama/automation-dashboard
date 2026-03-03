@@ -19,7 +19,7 @@ export default function LoginButton() {
       onClick={handleLogin}
       className="group relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-white rounded-lg bg-linear-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-600"
     >
-      <span className="relative px-5 py-2.5 transition-all duration-300 ease-in-out bg-white text-black rounded-md group-hover:bg-transparent group-hover:text-white">
+      <span className="relative px-5 py-2.5 transition-all duration-270 ease-in-out bg-white text-black rounded-md group-hover:bg-transparent group-hover:text-white">
         Sign in with Google
       </span>
     </button>
