@@ -138,7 +138,6 @@ export default function DashboardClient({ user }: { user: User }) {
                   <div className="">
                     <h2>Name</h2>
                     <input
-                      required
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -150,7 +149,6 @@ export default function DashboardClient({ user }: { user: User }) {
                   <div className=" mt-4">
                     <h2>Email</h2>
                     <input
-                      required
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
