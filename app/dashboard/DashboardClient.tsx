@@ -66,26 +66,19 @@ export default function DashboardClient({ user }: { user: User }) {
     fetchWorkflows();
   }, [supabase]);
 
-  // Persist success banner & dismiss once seen
+  // Persist success banner once per browser/device
   useEffect(() => {
-    if (!history.length) return;
+    if (!history.length || !user?.id) return;
 
-    const successCount = history.filter((e) => e.status === "success").length;
+    const hasSuccess = history.some((e) => e.status === "success");
+    const key = `seenFirstSuccess_${user.id}`;
+    const seen = localStorage.getItem(key);
 
-    queueMicrotask(() => {
-      if (successCount === 1) {
-        setShowFirstSuccess(true);
-      }
-    });
-
-    localStorage.setItem("seenFirstSuccess", "true");
-
-    const seen = localStorage.getItem("seenFirstSuccess");
-
-    queueMicrotask(() => {
-      if (seen) setShowFirstSuccess(false);
-    });
-  }, [history]);
+    queueMicrotask(() => {if (hasSuccess && !seen) {
+      setShowFirstSuccess(true);
+      localStorage.setItem(key, "true");
+    }})
+  }, [history, user]);
 
   async function runAutomation() {
     const workflow = workflows.find((wf) => wf.id === selectedWorkflow);
@@ -167,8 +160,14 @@ export default function DashboardClient({ user }: { user: User }) {
                   </div>
                 </>
               )}
-              <h2 className={`${!isAdmin && 'text-center mb-4'}  my-2`}>Your Workflows</h2>
-              <div className={`${isAdmin && "justify-between"} flex justify-around`}>
+              <h2
+                className={`${!isAdmin && "text-center mb-4 text-2xl"}  my-2`}
+              >
+                Your Workflows
+              </h2>
+              <div
+                className={`${isAdmin && "justify-between"} flex justify-around`}
+              >
                 {!workflows.length ? (
                   <>
                     <div className="flex space-x-2">
@@ -188,7 +187,7 @@ export default function DashboardClient({ user }: { user: User }) {
                     className="p-1 border rounded-md hover:opacity-60"
                   >
                     <option value="" className="bg-background">
-                      Select a workflow
+                      See your workflows
                     </option>
                     {workflows.map((wf) => (
                       <option
