@@ -208,7 +208,7 @@ export default function HistoryPanel({ history }: { history: Execution[] }) {
                   Execution status: {item.status.toUpperCase()}
                 </h2>
 
-                {index === 0 && (
+                {index === 0 && item.status === "success" && (
                   <div>{isLive ? <div>⚪ Idle</div> : <div>🟢 Live</div>}</div>
                 )}
               </div>

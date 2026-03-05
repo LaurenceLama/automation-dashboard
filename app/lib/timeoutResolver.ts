@@ -24,7 +24,7 @@ export async function resolveExecutionTimeouts(executions: Execution[]) {
         .from("executions")
         .update({
           status: "error",
-          error_type: "timeout",
+          error_type: "webhook timeout",
           error_message:
             "Execution timed out. No response received from automation platform.",
           resolved_at: new Date().toISOString(),
