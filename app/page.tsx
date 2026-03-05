@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen px-6 sm:px-0">
       {/* HERO */}
       <section className="pt-24 pb-20 text-center space-y-6">
         <h1 className="text-4xl font-bold">
@@ -34,17 +34,16 @@ export default function Home() {
       {/* SOCIAL PROOF */}
       <section className="py-6 border-y">
         <div className="max-w-4xl mx-auto text-center space-y-6">
-          <p className="text-sm opacity-70">
+          <p className="text-lg opacity-70">
             Works with your favorite automation platforms
           </p>
 
           {/* later change to appropriate logos */}
           <div className="flex justify-center gap-10 text-sm font-medium opacity-70 flex-wrap">
-            <span>Make</span>
-            <span>Zapier</span>
-            <span>GoHighLevel</span>
-            <span>n8n</span>
-            <span>Custom Webhooks</span>
+            <Image src="/Zapier_logo.svg" alt="n8n.png" width={100} height={100} />
+            <Image src="https://cdn.brandfetch.io/idxzQ5rVNK/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1701090513757" alt="n8n.png" width={100} height={100} className="bg-white p-1" />
+            <Image src="/ghl.png" alt="n8n.png" width={120} height={120} />
+            <Image src="https://n8n.io/brandguidelines/logo-white.svg" alt="n8n.png" width={100} height={100} />
           </div>
         </div>
       </section>
@@ -160,9 +159,9 @@ export default function Home() {
           Your automation command center
         </h2>
 
-        <div className="relative w-full h-100">
+        <div className="relative w-full xl:h-140">
           <Image
-            src="/dashboard-preview.png"
+            src="/dashboard-preview.svg"
             alt="dashboard-preview.png"
             width={600}
             height={500}

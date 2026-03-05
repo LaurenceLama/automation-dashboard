@@ -23,7 +23,7 @@ export default function WorkflowPage() {
     e.preventDefault();
 
     setCreating(true);
-    
+
     const supabase = createClient();
 
     const {
@@ -102,7 +102,9 @@ export default function WorkflowPage() {
                     />
                   </svg>
                   <span className="sr-only">Loading...</span>
-                  <p className="text-md text-amber-50 opacity-70">Creating...</p>
+                  <p className="text-md text-amber-50 opacity-70">
+                    Creating...
+                  </p>
                 </div>
               ) : (
                 "Create Workflow"
@@ -112,7 +114,7 @@ export default function WorkflowPage() {
         </section>
       ) : (
         /* ===== INSTRUCTIONS PANEL ===== */
-        <section className="space-y-8">
+        <section className="space-y-12">
           <h3>✅ Workflow Connected</h3>
 
           <div>
@@ -129,52 +131,77 @@ export default function WorkflowPage() {
 
           {/* WEBHOOK URL */}
           <div className="space-y-2">
-            <p className="font-semibold">Step 1 — Add an HTTP/Webhook action</p>
-            <p>
-              In your automation platform (Make, Zapier, GoHighLevel, etc), add
-              an <strong>HTTP Request</strong> or{" "}
-              <strong>(or Custom Webhook action) </strong>
-              as the step of your workflow.
-              <br />
-              Set the request method to <strong>POST</strong>.
+            <p className="font-semibold text-lg sm:text-xl">
+              Step 1 — Add an HTTP/Webhook action
             </p>
+            <div className="flex flex-col lg:flex-row max-w-4xl gap-6">
+              <div>
+                <p className="text-sm sm:text-base">
+                  In your automation platform (Make, Zapier, GoHighLevel, etc),
+                  add an <strong>HTTP Request</strong> or{" "}
+                  <strong>(or Custom Webhook action) </strong>
+                  as the step of your workflow.
+                  <br />
+                  <br />
+                  Set the request method to <strong>POST</strong>.
+                </p>
 
-            <p className="mt-2">POST URL:</p>
+                <p className="mt-2 text-sm sm:text-base">POST URL:</p>
 
-            <pre>{webhookUrl.slice(0, 26) + "*******"}</pre>
+                <pre className="overflow-x-auto text-xs sm:text-sm">
+                  {webhookUrl.slice(0, 26) + "*******"}
+                </pre>
 
-            <button
-              onClick={() => copy(webhookUrl)}
-              className="flex p-1 border rounded-md hover:opacity-60"
-            >
-              Copy Webhook URL
-            </button>
+                <button
+                  onClick={() => copy(webhookUrl)}
+                  className="flex p-1 border rounded-md hover:opacity-60 text-sm sm:text-base"
+                >
+                  Copy Webhook URL
+                </button>
+                <br />
+              </div>
 
-            <p className="opacity-90">
+              <div className="opacity-80 text-xs lg:my-auto">
+                <div className="border rounded-xl p-2">
+                  <strong>💡 Optional (Recommended)</strong>
+                  <p>
+                    If your automation platform supports error handlers, you can
+                    also add this webhook inside your error route to log failed
+                    executions.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <p className="opacity-90 text-sm sm:text-base">
               After setting the request method to <strong>POST</strong>, choose
               <strong> JSON</strong> as the request body format.
             </p>
 
-            <p className="text-sm opacity-70">
-              (Most platforms automatically set headers for you. If not, then
+            <p className="text-xs sm:text-sm opacity-70">
+              (Most platforms automatically set headers for you. If not, then..
               uhh... then it is my time to shine 👍)
             </p>
           </div>
 
           {/* WORKFLOW KEY */}
           <div className="space-y-2">
-            <p className="font-semibold">Step 2 — Use your Workflow Key</p>
+            <p className="font-semibold text-lg sm:text-xl">
+              Step 2 — Use your Workflow Key
+            </p>
 
-            <p>
+            <p className="text-sm sm:text-base">
               A <u>Workflow Key</u> identifies which workflow sent the
               execution.
             </p>
 
-            <pre>Workflow Key: {createdWorkflow.webhook_path}</pre>
+            <pre className="overflow-x-auto text-xs sm:text-sm">
+              Workflow Key: {createdWorkflow.webhook_path}
+            </pre>
 
             <button
               onClick={() => copy(createdWorkflow.webhook_path)}
-              className="p-1 border rounded-md hover:opacity-60"
+              className="p-1 border rounded-md hover:opacity-60 text-sm sm:text-base"
             >
               Copy Workflow Key
             </button>
@@ -182,23 +209,23 @@ export default function WorkflowPage() {
 
           {/* PAYLOAD */}
           <div className="space-y-2">
-            <p className="font-semibold">
+            <p className="font-semibold text-lg sm:text-xl">
               Step 3 — Paste this into the Request Body JSON
             </p>
 
-            <p>
+            <p className="text-sm sm:text-base">
               Paste this inside the <strong>Body</strong> section of your HTTP
               request and choose <strong>Raw → JSON</strong> (or equivalent).
             </p>
 
-            <pre>
+            <pre className="overflow-x-auto text-xs sm:text-sm">
               {`{
                 "workflowKey": "${createdWorkflow.webhook_path}",
                 "name": "{{optional}}",    <- e.g. client name
                 "email": "{{optional}}"    <- e.g. client email
-                }`}
+              }`}
             </pre>
-            <p>
+            <p className="text-sm sm:text-base">
               If <u>email</u> is empty, the dashboard will display only your
               account email.
               <br /> Dashboard format - email: [[ your email ]] [[ optional
@@ -219,22 +246,31 @@ export default function WorkflowPage() {
                   ),
                 )
               }
-              className="p-1 border rounded-md hover:opacity-60"
+              className="p-1 border rounded-md hover:opacity-60 text-sm sm:text-base"
             >
               Copy Payload
             </button>
           </div>
 
-          <p className="text-sm opacity-80">
-            💡 This step does NOT start your automation. It only reports
-            completed runs to your dashboard. <br /> Also, executionId is
-            automatically generated by the dashboard. Do NOT include it in your
-            payload.
+          <p className="text-xs sm:text-sm opacity-80">
+            💡 This step reports the execution to your dashboard. If the
+            workflow fails before reaching this step, no execution will be
+            recorded. <br /> Also, executionId is automatically generated by the
+            dashboard. Do NOT include it in your payload.
           </p>
+
+          <div className="space-y-1">
+            <strong className="text-sm sm:text-base">⚠️ NOTE </strong>
+            <p className="text-sm sm:text-md opacity-80">
+              This step reports successful workflow runs. If your automation
+              fails before this step, the execution will not appear in the
+              dashboard.
+            </p>
+          </div>
 
           <button
             onClick={() => router.push("/dashboard")}
-            className="border p-1 rounded-md bg-amber-50 text-background font-semibold hover:bg-background hover:border-amber-50 hover:text-amber-50 transition-all ease-in-out duration-200"
+            className="w-full sm:w-auto border p-1 rounded-md bg-amber-50 text-background font-semibold hover:bg-background hover:border-amber-50 hover:text-amber-50 transition-all ease-in-out duration-200 text-sm sm:text-base"
           >
             Go to Dashboard
           </button>
