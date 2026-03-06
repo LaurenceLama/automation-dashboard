@@ -219,11 +219,11 @@ export default function HistoryPanel({ history }: { history: Execution[] }) {
 
               <h2>Created at: {new Date(item.timestamp).toLocaleString()}</h2>
 
-              <h2>Name: {item.name}</h2>
+              <h2>Client Name: {item.name}</h2>
 
               <h2>Email: {item.email}</h2>
 
-              <h2>Triggered source: {item.trigger.toUpperCase()}</h2>
+              {/* <h2>Triggered source: {item.trigger.toUpperCase()}</h2> */}
 
               <h2 className="opacity-50">Execution ID: {item.executionId}</h2>
 

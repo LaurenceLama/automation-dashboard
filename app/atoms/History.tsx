@@ -12,13 +12,12 @@ export type ErrorType =
 export interface Execution {
   executionId: string;
   workflowName: string;
-  // webhook_path: string;
 
   name: string;
   email: string;
 
   status: ExecutionStatus;
-  trigger: TriggerType;
+  // trigger: TriggerType;
 
   timestamp: string;
 

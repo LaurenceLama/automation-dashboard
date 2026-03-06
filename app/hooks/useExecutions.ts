@@ -72,7 +72,7 @@ export function useExecutions(initialValue: Execution[]) {
   }, [supabase]);
 
   async function triggerExecution({
-    workflowId,
+    // workflowId,
     workflowKey,
     workflowName,
     name,

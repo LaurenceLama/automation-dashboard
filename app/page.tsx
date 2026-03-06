@@ -40,16 +40,32 @@ export default function Home() {
 
           {/* later change to appropriate logos */}
           <div className="flex justify-center gap-10 text-sm font-medium opacity-70 flex-wrap">
-            <Image src="/Zapier_logo.svg" alt="n8n.png" width={100} height={100} />
-            <Image src="https://cdn.brandfetch.io/idxzQ5rVNK/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1701090513757" alt="n8n.png" width={100} height={100} className="bg-white p-1" />
+            <Image
+              src="/Zapier_logo.svg"
+              alt="n8n.png"
+              width={100}
+              height={100}
+            />
+            <Image
+              src="https://cdn.brandfetch.io/idxzQ5rVNK/theme/dark/logo.svg?c=1bxid64Mup7aczewSAYMX&t=1701090513757"
+              alt="n8n.png"
+              width={100}
+              height={100}
+              className="bg-white p-1"
+            />
             <Image src="/ghl.png" alt="n8n.png" width={120} height={120} />
-            <Image src="https://n8n.io/brandguidelines/logo-white.svg" alt="n8n.png" width={100} height={100} />
+            <Image
+              src="https://n8n.io/brandguidelines/logo-white.svg"
+              alt="n8n.png"
+              width={100}
+              height={100}
+            />
           </div>
         </div>
       </section>
 
       {/* PROBLEM */}
-      <section className="py-20 max-w-5xl mx-auto px-6 text-center space-y-6">
+      <section className="py-16 max-w-5xl mx-auto px-6 text-center space-y-6">
         <h2 className="text-3xl font-semibold">
           Automation logs are messy and hard to track
         </h2>
@@ -122,32 +138,26 @@ export default function Home() {
           Built for automation builders
         </h2>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="p-6 border rounded-xl">
-            <h3 className="font-semibold mb-2">Execution history</h3>
-            <p className="text-sm opacity-80">
-              View all automation runs with timestamps and status.
+        <div className="grid md:grid-cols-3 gap-6 text-left">
+          <div className="border rounded-xl p-6">
+            <h3 className="font-semibold mb-2">Freelancers</h3>
+            <p className="opacity-80">
+              Monitor client automations and know instantly when something
+              breaks.
             </p>
           </div>
 
-          <div className="p-6 border rounded-xl">
-            <h3 className="font-semibold mb-2">Success & error tracking</h3>
-            <p className="text-sm opacity-80">
-              Quickly identify failed automations and investigate errors.
+          <div className="border rounded-xl p-6">
+            <h3 className="font-semibold mb-2">Agencies</h3>
+            <p className="opacity-80">
+              Track multiple workflows across different platforms in one place.
             </p>
           </div>
 
-          <div className="p-6 border rounded-xl">
-            <h3 className="font-semibold mb-2">Client identification</h3>
-            <p className="text-sm opacity-80">
-              Track which client triggered each workflow execution.
-            </p>
-          </div>
-
-          <div className="p-6 border rounded-xl">
-            <h3 className="font-semibold mb-2">Universal webhook</h3>
-            <p className="text-sm opacity-80">
-              Works with Make, Zapier, GoHighLevel, or any automation platform.
+          <div className="border rounded-xl p-6">
+            <h3 className="font-semibold mb-2">Automation builders</h3>
+            <p className="opacity-80">
+              See execution logs without digging inside Make or Zapier history.
             </p>
           </div>
         </div>
@@ -173,7 +183,7 @@ export default function Home() {
       </section>
 
       {/* CALL TO ACTION */}
-      <section className="py-24 text-center space-y-6">
+      <section className="py-24 text-center space-y-6 hover:-translate-y-2 transition-all">
         <h2 className="text-3xl font-semibold">
           Start tracking your automations today!
         </h2>
