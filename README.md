@@ -1,77 +1,64 @@
 ## Automation Execution Dashboard
-A client-safe dashboard for small businesses to monitor automation runs (Make, GHL, Zapier, etc.) without giving them access to the automation platform.
 
+A unified monitor for automation runs across platforms (Make, Zapier, n8n, GoHighLevel, etc.). Stop jumping between platform logs — see all your workflow executions in one place.
 
 ### In simple terms
 
-This dashboard shows whether your automations ran successfully — without you needing to access or understand the automation tools behind them.
-
+Instead of logging into Make, then Zapier, then n8n to check if your automations ran — this dashboard shows everything in one unified view.
 
 ### Vision
 
-This repo aims for a lightweight execution dashboard that lets teams see how automations run across tools like Make, Zapier, and GoHighLevel — without jumping between platforms.
+A monitoring dashboard for automation freelancers that makes workflow activity easy to understand — for both builders and their clients.
 
-Automation platforms already provide execution logs, but they are:
+**The problem it solves:**
 
-- Tool-specific
-- Not client-facing
-- Fragmented across systems
+Automation freelancers manage workflows across multiple platforms, but each keeps execution logs buried in its own interface. You have to log into Make, then Zapier, then n8n just to see what ran and what failed. This dashboard gives you one place to monitor everything — and a simple summary to share with clients.
 
-This dashboard acts as a unified, client-safe execution layer that standardizes how runs are viewed regardless of trigger source.
-
-This dashboard gives clients visibility into automation runs without exposing the automation platform itself.
-
+**The solution:**
+One dashboard. All your automations. One place to see what's running, what succeeded, and what failed.
 
 ### Why this exists (real-world use case)
 
-Agencies often build automations for clients using tools like Make or Zapier.
+Automation freelancers often manage 10+ workflows across Make, Zapier, n8n, and other platforms for different clients.
 
-Clients want to know whether things are working — but do not want access to those tools.
+Currently, monitoring requires:
 
-So, this dashboard solves that gap by providing a client-safe execution view while keeping automation internals private.
+- Logging into Make → checking execution logs
+- Logging into Zapier → checking execution logs
+- Logging into n8n → checking execution logs
+- Manually correlating which automations work, which fail, and which need attention
 
+This dashboard solves that by aggregating all execution data into one unified interface.
 
 ### Who this dashboard is for
 
-This dashboard exists so that clients can see whether automations are working — without logging into Make, Zapier, or internal tools.
-
-This dashboard is designed for client-facing visibility, not automation configuration.
+This dashboard is designed for **automation freelancers and agencies** who manage workflows across multiple platforms and need a single place to monitor execution health.
 
 It is intended for:
 
-- Clients who want to know whether automations ran successfully
-- Clients who do not want access to internal automation tools (Make, Zapier, etc.)
-- Agencies or freelancers managing automations on behalf of clients
-- Retainer-based automation work where ongoing reliability matters
+- Freelancers managing automations across multiple tools
+- Agencies running automations on behalf of multiple clients
+- Anyone who needs real-time visibility into workflow execution status
+- Teams that want to avoid platform-specific logging interfaces
 
 It is not intended for:
 
-- Debugging or building automations
-- Viewing raw execution trees, payloads, or internal logic
-- Replacing automation platforms like Make or Zapier
+- Building or debugging automations (use the platforms themselves)
+- Viewing execution payloads or internal logic trees
+- Replacing Make, Zapier, or n8n
 
 Automation platforms handle internals.
 This dashboard communicates outcomes.
 
+### What you see in the dashboard
 
-### What clients see vs What I handle
+For each workflow execution:
 
-What clients see
-
-- Workflow name
-- Status (pending / success / error)
-- Timestamp
-- Optional error message
-
-
-What I handle
-
-- Automation platform setup (Make, GHL, etc.)
-- Webhooks & callbacks
-- Dashboard advancements & troubleshooting
-- Error handling & retries
-- Execution tracking logic
-
+- **Workflow name** — Which automation ran
+- **Status** — Pending / Success / Error
+- **Timestamp** — When it executed
+- **Platform** — Where it ran (Make, Zapier, n8n, etc.)
+- **Error details** (if applicable) — Why it failed
 
 ### Execution Lifecycle
 
@@ -84,16 +71,14 @@ What I handle
 
 The dashboard does not assume execution completion until a callback is received.
 
-
 ### Webhook Callback Contract (Make → Dashboard)
 
 Expected payload:
 {
-  workflowKey: string;
-  name?: string;
-  email?: string;
+workflowKey: string;
+name?: string;
+email?: string;
 }
-
 
 ### Execution State Guarantees
 
@@ -103,18 +88,15 @@ Expected payload:
 - Duplicate or late callbacks are ignored
 - Executions do not remain pending indefinitely
 
+### Current features (completed)
 
-### Planned integrations
+- ✅ Real-time execution monitoring
+- ✅ Webhook callback handling
+- ✅ Execution state management (pending → success/error)
+- ✅ Unified dashboard UI
 
-- Make (webhooks & callbacks)
+### Next steps
 
-- GoHighLevel
-
-- Other webhook-based automation tools
-
-### Next steps (planned)
-
-- Replace mock execution with Make webhook trigger DONE
-- Support webhook callbacks for success/error updates DONE
-- Add execution states (pending → success/error) DONE
-- Role-based or client-safe views DONE
+- Export execution history
+- Failure execution cards from client workflows (maybe)
+- umm
