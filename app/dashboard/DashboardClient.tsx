@@ -68,17 +68,18 @@ export default function DashboardClient({ user }: { user: User }) {
 
   // Persist success banner once per browser/device
   useEffect(() => {
-    if (!history.length || !user?.id) return;
+    if (!history.length || !user?.id || typeof window === "undefined") return;
 
     const hasSuccess = history.some((e) => e.status === "success");
     const key = `seenFirstSuccess_${user.id}`;
     const seen = localStorage.getItem(key);
 
-    queueMicrotask(() => {if (hasSuccess && !seen) {
-      setShowFirstSuccess(true);
+    // Only update localStorage, don't call setState
+    if (hasSuccess && !seen) {
       localStorage.setItem(key, "true");
-    }})
-  }, [history, user]);
+      queueMicrotask(() => setShowFirstSuccess(true));
+    }
+  }, [history, user?.id]);
 
   async function runAutomation() {
     const workflow = workflows.find((wf) => wf.id === selectedWorkflow);

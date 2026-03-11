@@ -56,16 +56,16 @@ export default function HistoryPanel({ history }: { history: Execution[] }) {
     return () => clearInterval(interval);
   }, [lastExecution]);
 
+  // Skeleton loading
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate data loading or fetch from your data source
-    queueMicrotask(() => {
-      if (orderedHistory.length > 0) {
-        setIsLoading(false);
-      }
-    });
-  }, [orderedHistory]);
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   const totalRuns = history.length;
   const successRuns = history.filter(
