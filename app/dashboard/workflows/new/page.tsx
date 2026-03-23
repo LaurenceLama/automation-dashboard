@@ -61,19 +61,22 @@ export default function WorkflowPage() {
     <main className="min-h-screen p-6 flex items-center justify-center">
       {!createdWorkflow ? (
         /* ===== CREATE FORM ===== */
-        <section>
+        <section className="space-y-2">
           <Link
             href="/dashboard"
             className="p-1 border rounded-md hover:opacity-60"
           >
             Back to dashboard
           </Link>
+
           <h2 className="mt-8">Add Workflow</h2>
+
           <form onSubmit={addWorkflow} className="space-x-4 flex">
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
               className="border rounded-md p-1"
               placeholder="Fill workflow name here"
             />
@@ -111,16 +114,21 @@ export default function WorkflowPage() {
               )}
             </button>
           </form>
+
+          <h2 className="text-sm opacity-60">
+            *After successful creation, an instruction panel will pop up to guide you
+            with your chosen workflow to dashboard.
+          </h2>
         </section>
       ) : (
         /* ===== INSTRUCTIONS PANEL ===== */
-        <section className="space-y-12">
-          <h3>✅ Workflow Connected</h3>
+        <section className="space-y-50 max-sm:max-w-xs">
+          <div className="text-center mt-50 space-y-4">
+            <h1 className="text-5xl font-bold">✅ Workflow Created</h1>
 
-          <div>
-            <p className="opacity-90">
-              Add one final step to your automation so executions appear in your
-              dashboard:
+            <p className="font-semibold text-lg">
+              Please read and follow the steps below in order to successfully
+              show executions of your workflow <u>(5min read)</u>:
             </p>
 
             <p className="text-sm opacity-60">
@@ -130,22 +138,21 @@ export default function WorkflowPage() {
           </div>
 
           {/* WEBHOOK URL */}
-          <div className="space-y-2">
-            <p className="font-semibold text-lg sm:text-xl">
+          <div className="space-y-6">
+            <p className="font-semibold text-3xl">
               Step 1 — Add an HTTP/Webhook action
             </p>
-            <div className="flex flex-col lg:flex-row max-w-4xl gap-6">
-              <div>
-                <p className="text-sm sm:text-base">
-                  In your automation platform (Make, Zapier, GoHighLevel, etc),
-                  add an <strong>HTTP Request</strong> or{" "}
-                  <strong>(or Custom Webhook action) </strong>
-                  as the step of your workflow.
-                  <br />
-                  <br />
-                  Set the request method to <strong>POST</strong>.
-                </p>
-
+            <p className="text-sm sm:text-base">
+              In your automation platform (Make, Zapier, GoHighLevel, etc), add
+              an <strong>HTTP Request</strong> or{" "}
+              <strong>(or Custom Webhook action) </strong>
+              as the step of your workflow.
+              <br />
+              <br />
+              Set the request method to <strong>POST</strong>.
+            </p>
+            <div className="flex flex-col lg:flex-row max-w-4xl lg:gap-60">
+              <div className="space-y-2">
                 <p className="mt-2 text-sm sm:text-base">POST URL:</p>
 
                 <pre className="overflow-x-auto text-xs sm:text-sm">
@@ -185,8 +192,8 @@ export default function WorkflowPage() {
           </div>
 
           {/* WORKFLOW KEY */}
-          <div className="space-y-2">
-            <p className="font-semibold text-lg sm:text-xl">
+          <div className="space-y-6">
+            <p className="font-semibold text-3xl">
               Step 2 — Use your Workflow Key
             </p>
 
@@ -208,8 +215,8 @@ export default function WorkflowPage() {
           </div>
 
           {/* PAYLOAD */}
-          <div className="space-y-2">
-            <p className="font-semibold text-lg sm:text-xl">
+          <div className="space-y-6">
+            <p className="font-semibold text-3xl">
               Step 3 — Paste this into the Request Body JSON
             </p>
 
