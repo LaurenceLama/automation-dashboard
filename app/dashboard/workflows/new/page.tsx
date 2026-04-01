@@ -129,8 +129,9 @@ export default function WorkflowPage() {
             <h1 className="text-5xl font-bold">✅ Workflow Created</h1>
 
             <p className="font-semibold text-lg">
-              But not yet connected. So please read and follow the steps below in order to successfully
-              show executions of your workflow <u>(5min read)</u>:
+              But not yet connected. So please read and follow the steps below
+              in order to successfully show executions of your workflow{" "}
+              <u>(5min read)</u>:
             </p>
 
             <p className="text-sm opacity-60">
@@ -141,7 +142,7 @@ export default function WorkflowPage() {
 
           {/* WEBHOOK URL */}
           <div className="space-y-6">
-            <p className="font-semibold text-3xl">
+            <p className="text-blue-400 font-semibold text-3xl">
               Step 1 — Add an HTTP/Webhook action
             </p>
             <p className="text-sm sm:text-base">
@@ -195,7 +196,7 @@ export default function WorkflowPage() {
 
           {/* WORKFLOW KEY */}
           <div className="space-y-6">
-            <p className="font-semibold text-3xl">
+            <p className="text-blue-400 font-semibold text-3xl">
               Step 2 — Use your Workflow Key
             </p>
 
@@ -205,7 +206,7 @@ export default function WorkflowPage() {
             </p>
 
             <pre className="overflow-x-auto text-xs sm:text-sm">
-              Workflow Key: {createdWorkflow.webhook_path}
+              Your Workflow Key: {createdWorkflow.webhook_path}
             </pre>
 
             <button
@@ -218,7 +219,7 @@ export default function WorkflowPage() {
 
           {/* PAYLOAD */}
           <div className="space-y-6">
-            <p className="font-semibold text-3xl">
+            <p className="text-blue-400 font-semibold text-3xl">
               Step 3 — Paste this into the Request Body JSON
             </p>
 
@@ -234,13 +235,6 @@ export default function WorkflowPage() {
                 "email": "{{optional}}"    <- e.g. client email
               }`}
             </pre>
-            <p className="text-sm sm:text-base">
-              If <u>email</u> is empty, the dashboard will display only your
-              account email.
-              <br />
-              <br />
-              Dashboard format - email: [[ your email ]] [[ optional email ]]
-            </p>
 
             <button
               onClick={() =>
@@ -260,6 +254,36 @@ export default function WorkflowPage() {
             >
               Copy Payload
             </button>
+
+            <p className="text-sm font-semibold sm:text-base">
+              For platforms using Key/Value format (like Zapier):
+            </p>
+
+            <pre className="overflow-x-auto text-xs sm:text-sm">
+              {`
+              Key:              Value:
+                             
+              workflowKey       "${createdWorkflow.webhook_path}"
+              name              "client name"                             
+              email             "client email"
+              `}
+            </pre>
+
+            <p className="text-sm sm:text-base">
+              Note that the value has &quot;quotes&quot;, while the key does
+              not.
+            </p>
+
+            <div>
+              <p className="text-sm sm:text-base">
+                If <u>email</u> is empty, the dashboard will display only your
+                account email.
+              </p>
+
+              <p className="text-sm sm:text-base">
+                Dashboard format - email: [[ your email ]] [[ optional email ]]
+              </p>
+            </div>
           </div>
 
           <p className="opacity-80 p-2 max-w-xl mx-auto bg-neutral-800">
@@ -273,9 +297,9 @@ export default function WorkflowPage() {
             <div className="space-y-1">
               <strong className="text-sm sm:text-base">⚠️ NOTE </strong>
               <p className="text-sm sm:text-md opacity-80">
-                This step reports <b>successful</b> workflow runs. If your automation
-                fails before this step, the execution will not appear in the
-                dashboard.
+                This step reports <b>successful</b> workflow runs. If your
+                automation fails before this step, the execution will not appear
+                in the dashboard.
               </p>
             </div>
 
@@ -288,8 +312,8 @@ export default function WorkflowPage() {
               />
               <p className="inline">
                 Check this box if you have finished following the steps and
-                successfully added the HTTP action (along with the payload + URL) in
-                your workflow.
+                successfully added the HTTP action (along with the payload +
+                URL) in your workflow.
               </p>
             </label>
           </div>
