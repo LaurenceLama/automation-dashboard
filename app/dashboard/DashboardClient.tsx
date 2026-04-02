@@ -5,14 +5,13 @@ import HistoryPanel from "../components/HistoryPanel";
 import { useExecutions } from "../hooks/useExecutions";
 import { createClient } from "../utils/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { redirect } from "next/navigation";
 import { resolveExecutionTimeouts } from "../lib/timeoutResolver";
 import Link from "next/link";
 import { useAdmin } from "../hooks/useAdmin";
 
 type Workflow = {
   id: string;
-  name: string;
+  workflow_name: string;
   webhook_path: string;
 };
 
@@ -55,7 +54,7 @@ export default function DashboardClient({ user }: { user: User }) {
     const fetchWorkflows = async () => {
       const { data, error } = await supabase
         .from("workflows")
-        .select("id, name, webhook_path")
+        .select("id, workflow_name, webhook_path")
         .order("created_at", { ascending: true });
 
       if (!error) {
@@ -92,7 +91,7 @@ export default function DashboardClient({ user }: { user: User }) {
     await triggerExecution({
       workflowId: workflow.id,
       workflowKey: workflow.webhook_path,
-      workflowName: workflow.name,
+      workflowName: workflow.workflow_name,
       name,
       email,
     });
@@ -204,7 +203,7 @@ export default function DashboardClient({ user }: { user: User }) {
                         value={wf.id}
                         className="bg-background"
                       >
-                        {wf.name}
+                        {wf.workflow_name}
                       </option>
                     ))}
                   </select>
