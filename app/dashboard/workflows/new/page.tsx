@@ -6,12 +6,12 @@ import Link from "next/link";
 import { createClient } from "@/app/utils/supabase/client";
 
 type CreatedWorkflow = {
-  name: string;
+  workflow_name: string;
   webhook_path: string;
 };
 
 export default function WorkflowPage() {
-  const [name, setName] = useState("");
+  const [workflow_name, setWorkflow_name] = useState("");
   const router = useRouter();
 
   const [creating, setCreating] = useState(false);
@@ -32,12 +32,12 @@ export default function WorkflowPage() {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user || !name) return;
+    if (!user || !workflow_name) return;
 
     const webhookPath = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
 
     const { error } = await supabase.from("workflows").insert({
-      name,
+      workflow_name,
       client_id: user.id,
       email: user.email,
       webhook_path: webhookPath,
@@ -48,7 +48,7 @@ export default function WorkflowPage() {
       return;
     }
 
-    setCreatedWorkflow({ name, webhook_path: webhookPath });
+    setCreatedWorkflow({ workflow_name, webhook_path: webhookPath });
 
     setCreating(false);
   }
@@ -76,8 +76,8 @@ export default function WorkflowPage() {
           <form onSubmit={addWorkflow} className="space-x-4 flex">
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={workflow_name}
+              onChange={(e) => setWorkflow_name(e.target.value)}
               required
               className="border rounded-md p-1"
               placeholder="Fill workflow name here"
@@ -128,7 +128,7 @@ export default function WorkflowPage() {
           <div className="text-center mt-50 space-y-4">
             <h1 className="text-5xl font-bold">✅ Workflow Created</h1>
 
-            <p className="font-semibold text-lg">
+            <p className="text-blue-400 font-semibold text-lg">
               But not yet connected. So please read and follow the steps below
               in order to successfully show executions of your workflow{" "}
               <u>(5min read)</u>:
@@ -263,15 +263,14 @@ export default function WorkflowPage() {
               {`
               Key:              Value:
                              
-              workflowKey       "${createdWorkflow.webhook_path}"
-              name              "client name"                             
-              email             "client email"
+              workflowKey       ${createdWorkflow.webhook_path}
+              name              client name                             
+              email             client email
               `}
             </pre>
 
             <p className="text-sm sm:text-base">
-              Note that the value has &quot;quotes&quot;, while the key does
-              not.
+              Note that BOTH value and key do NOT contain &quot;quotes&quot;.
             </p>
 
             <div>

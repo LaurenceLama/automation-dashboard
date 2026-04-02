@@ -101,13 +101,13 @@ export default function DashboardClient({ user }: { user: User }) {
   async function handleLogout() {
     try {
       await supabase.auth.signOut();
-      // Clear any local storage if you're storing tokens
+      
       localStorage.clear(); // or be specific (in case): localStorage.removeItem('key')
-      // Redirect to login
+      
       window.location.href = "/login";
     } catch (error) {
       console.error("Logout error:", error);
-      // Still redirect even if signOut fails
+    
       window.location.href = "/login";
     }
   }
